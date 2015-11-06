@@ -16,7 +16,7 @@ Run collectd with the default configuration with the following command:
 
 ```
 docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /proc:/mnt/proc:ro quay.io/signalfuse/collectd
+  -v /proc:/mnt/proc:ro -v /etc:/mnt/etc:ro quay.io/signalfuse/collectd
 ```
 
 If you just want to look around inside the image, you can run `bash`.
@@ -24,8 +24,8 @@ Then you can run `/opt/setup/run.sh` yourself to configure the bind mount
 and start collectd.
 
 ```
-docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /proc:/mnt/proc:ro quay.io/signalfuse/collectd bash
+docker run -ti --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -v /proc:/mnt/proc:ro -v /etc:/mnt/etc:ro quay.io/signalfuse/collectd bash
 ```
 
 If you don't want to pass your API token through a command-line argument, you
@@ -34,7 +34,7 @@ can put `SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX` into a file (that you can
 
 ```
 docker run --privileged --env-file=token.env \
-  -v /proc:/mnt/proc:ro quay.io/signalfuse/collectd
+  -v /proc:/mnt/proc:ro -v /etc:/mnt/etc:ro quay.io/signalfuse/collectd
 ```
 
 ## FAQ
@@ -45,6 +45,13 @@ Yes. Collectd needs access to the parent host's `/proc` filesystem to get
 statistics. It's possible to run collectd without passing the parent host's
 `/proc` filesystem without running the container as privileged, but the metrics
 would not be accurate.
+
+### Do I need to pass in /etc?
+
+It's actually optional but we use this to get the host OS's version so the
+SignalFx Collectd Plugin will function correctly and report the right
+information.  If you leave it out you will see the container's OS in the
+meta-data for this host.
 
 ### Why can't I exec into the running docker container?
 

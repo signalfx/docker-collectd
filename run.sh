@@ -51,6 +51,10 @@ cat $COLLECTD_CONF
 cat $PLUGIN_CONF
 cat $WRITE_HTTP_CONF
 
+if [ -d "/mnt/etc" ]; then
+	cp -f /mnt/etc/*-release /etc
+fi
+
 if [ ! -d /mnt/oldproc ]; then
 	umount /proc
 	mount -o bind /mnt/proc /proc
