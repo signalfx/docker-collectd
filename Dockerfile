@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Install all apt-get utils and required repos 
 RUN apt-get install -y apt-transport-https software-properties-common curl vim
 RUN add-apt-repository ppa:signalfx/collectd-release && add-apt-repository ppa:signalfx/collectd-plugin-release
-ENV EXPECTED_PLUGIN_VERSION 0.0.10
+ENV EXPECTED_PLUGIN_VERSION 0.0.12
 RUN apt-get update && apt-get -y upgrade
 
 # Install SignalFx Plugin and collectd
