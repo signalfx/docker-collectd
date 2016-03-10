@@ -68,9 +68,12 @@ following:
 1. `COLLECTD_HOSTNAME` - if set we will set this in
    `/etc/collectd/collectd.conf`, otherwise collectd will use DNS to figure
    out your hostname.
-1. `COLLECTD_INTERVAL` - if set we will use the specified interval for collectd 
+1. `COLLECTD_INTERVAL` - if set we will use the specified interval for collectd
    and the plugin, otherwise the default interval is 10 seconds.
 1. `COLLECTD_CONFIGS` - if set we will include `$COLLECTD_CONFIGS/*.conf` in
    collectd.conf where you can include any other plugins you want to enable.
 1. `COLLECTD_BUFFERSIZE` - if set we will set `write_http`'s buffersize to the
    value provided, otherwise a default value of 16384 will be used.
+1. `COLLECTD_FLUSHINTERVAL` - if set we will set `write_http`'s flush interval
+   to the value provided, otherwise a default value of what COLLECTD_INTERVAL
+   is set to will be used.

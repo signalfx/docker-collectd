@@ -10,11 +10,13 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get install -y apt-transport-https software-properties-common curl vim
 RUN add-apt-repository ppa:signalfx/collectd-release && add-apt-repository ppa:signalfx/collectd-plugin-release
 ENV EXPECTED_PLUGIN_VERSION 0.0.12
+ENV EXPECTED_COLLECTD_VERSION 5.5.1.sfx0
 RUN apt-get update && apt-get -y upgrade
 
 # Install SignalFx Plugin and collectd
 RUN apt-get install -y signalfx-collectd-plugin collectd jq
 RUN grep "VERSION = \"$EXPECTED_PLUGIN_VERSION\"" /opt/signalfx-collectd-plugin/signalfx_metadata.py
+RUN collectd -h | grep $EXPECTED_COLLECTD_VERSION
 
 # clean up existing configs
 RUN rm -rf /etc/collectd
