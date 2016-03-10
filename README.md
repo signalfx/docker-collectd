@@ -37,6 +37,14 @@ docker run --privileged --env-file=token.env \
   -v /proc:/mnt/proc:ro -v /etc:/mnt/etc:ro quay.io/signalfuse/collectd
 ```
 
+On CoreOS because /etc/*-release are symlinks you want to mount
+/usr/share/coreos in place of /etc.
+
+```
+docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -v /proc:/mnt/proc:ro -v /usr/share/coreos:/mnt/etc:ro quay.io/signalfuse/collectd
+```
+
 ## FAQ
 
 ### Do I need to run the container as privileged?
@@ -72,6 +80,7 @@ following:
    and the plugin, otherwise the default interval is 10 seconds.
 1. `COLLECTD_CONFIGS` - if set we will include `$COLLECTD_CONFIGS/*.conf` in
    collectd.conf where you can include any other plugins you want to enable.
+   These of course would need to be mounted in the container with -v.
 1. `COLLECTD_BUFFERSIZE` - if set we will set `write_http`'s buffersize to the
    value provided, otherwise a default value of 16384 will be used.
 1. `COLLECTD_FLUSHINTERVAL` - if set we will set `write_http`'s flush interval
