@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -x
 
 COLLECTD_CONF=/etc/collectd/collectd.conf
 WRITE_HTTP_CONF=/etc/collectd/managed_config/10-write_http-plugin.conf
@@ -31,6 +31,7 @@ fi
 if [ -z "$COLLECTD_FLUSHINTERVAL" ]; then
 	COLLECTD_FLUSHINTERVAL=$COLLECTD_INTERVAL
 fi
+
 AWS_UNIQUE_ID=$(curl -s --connect-timeout 1 http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId + "_" + .accountId + "_" + .region')
 
 [ -n "$AWS_UNIQUE_ID" ] && AWS_VALUE="?sfxdim_AWSUniqueId=$AWS_UNIQUE_ID"
