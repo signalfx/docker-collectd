@@ -6,10 +6,10 @@ MAINTAINER SignalFx Support <support+collectd@signalfx.com>
 # Install common softwares
 ENV DEBIAN_FRONTEND noninteractive
 
-# Install all apt-get utils and required repos 
+# Install all apt-get utils and required repos
 RUN apt-get install -y apt-transport-https software-properties-common curl vim
 RUN add-apt-repository ppa:signalfx/collectd-release && add-apt-repository ppa:signalfx/collectd-plugin-release
-ENV EXPECTED_PLUGIN_VERSION 0.0.12
+ENV EXPECTED_PLUGIN_VERSION 0.0.21
 ENV EXPECTED_COLLECTD_VERSION 5.5.1.sfx0
 RUN apt-get update && apt-get -y upgrade
 
