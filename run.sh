@@ -15,9 +15,25 @@ fi
 if [ -n "$COLLECTD_CONFIGS" ]; then
 	echo "Include \"$COLLECTD_CONFIGS/*.conf\"" >> $COLLECTD_CONF
 fi
-HOSTNAME="FQDNLookup true"
+#If the user sets COLLECTD_HOSTNAME then assign to HOSTNAME
 if [ -n "$COLLECTD_HOSTNAME" ]; then
 	HOSTNAME="Hostname \"$COLLECTD_HOSTNAME\""
+	echo "Emitting Metrics With Hostname: \"$HOST_HOSTNAME\""
+#If the host's hostname is mounted @ /mnt/etc/hostname, then assign to HOSTNAME
+elif [ -e /mnt/hostname ]; then
+    HOST_HOSTNAME=$(cat /mnt/hostname)
+    if [ -n "$HOST_HOSTNAME" ]; then
+        HOSTNAME="Hostname \"$HOST_HOSTNAME\""
+        echo "Emitting Metrics With Hostname: \"$HOST_HOSTNAME\""
+    fi
+#The user did not specify and the host's hostname is unavailable
+#Exit with error code 1
+else
+    echo 1>&2 "ERROR: Unable to find the hostname for the docker host. Please \
+specify a hostname with the option -e \"HOSTNAME=<hostname>\" or by \
+mounting the Docker host's hostname \
+-v <path to host's hostname file>:/mnt/hostname:ro"
+    exit 1
 fi
 if [ -z "$COLLECTD_BUFFERSIZE" ]; then
 	COLLECTD_BUFFERSIZE="16384"
