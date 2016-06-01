@@ -10,9 +10,23 @@ This image allows you to run collectd in a completelly containerized
 environment, but while retaining the ability to report statistics about the
 _host_ the collectd container is running on.
 
+The Signal Fx collectd Docker plugin is also included, and will report metrics
+about your other containers.
+
 ## How to use this image
 
 Run collectd with the default configuration with the following command:
+
+```
+docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -v /etc/hostname:/mnt/hostname:ro -v /proc:/mnt/proc:ro -v \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  /etc:/mnt/etc:ro quay.io/signalfuse/collectd
+```
+
+If you don't want to report docker metrics from the collectd docker plugin, you
+can leave out the argument that mounts
+the docker socket `-v /var/run/docker.sock:/var/run/docker.sock`.
 
 ```
 docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
@@ -27,6 +41,7 @@ and start collectd.
 ```
 docker run -ti --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro -v /proc:/mnt/proc:ro \
+  -v /var/run/docker.sock:/var/run/docker.sock \
   -v /etc:/mnt/etc:ro quay.io/signalfuse/collectd bash
 ```
 
@@ -37,6 +52,7 @@ can put `SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX` into a file (that you can
 ```
 docker run --privileged --env-file=token.env \
   -v /etc/hostname:/mnt/hostname:ro \
+  -v /var/run/docker.sock:/var/run/docker.sock \
   -v /proc:/mnt/proc:ro -v /etc:/mnt/etc:ro quay.io/signalfuse/collectd
 ```
 
@@ -46,6 +62,7 @@ On CoreOS because /etc/*-release are symlinks you want to mount
 ```
 docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro -v /proc:/mnt/proc:ro \
+  -v /var/run/docker.sock:/var/run/docker.sock \
   -v /usr/share/coreos:/mnt/etc:ro quay.io/signalfuse/collectd
 ```
 

@@ -24,8 +24,32 @@ RUN rm -rf /etc/collectd
 # Setup our collectd
 ADD configs /etc/
 
+#Install unzip and pip
+RUN apt-get install -qy unzip python-pip
+
+#Download the SignalFx docker-collectd-plugin
+RUN curl -L "https://github.com/signalfx/docker-collectd-plugin/archive/master.zip" --output /tmp/master.zip
+
+#Extract the docker plugin
+RUN unzip /tmp/master.zip -d /tmp
+
+#Move the docker plugin into place
+RUN mv /tmp/docker-collectd-plugin-master/ /usr/share/collectd/docker-collectd-plugin
+
+#Install pip requirements
+RUN pip install -r /usr/share/collectd/docker-collectd-plugin/requirements.txt
+
+#Move the managed config into place
+RUN cp /usr/share/collectd/docker-collectd-plugin/dockerplugin.conf /etc/collectd/managed_config/
+
+#Clean up the zip files
+RUN rm /tmp/master.zip
+
 # Setup startup
 ADD run.sh /.docker/
+
+# Set correct permissions
+RUN chmod +x /.docker/run.sh
 
 WORKDIR /.docker/
 CMD /.docker/run.sh
