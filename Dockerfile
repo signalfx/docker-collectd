@@ -14,21 +14,31 @@ ADD run.sh /.docker/
 ADD configs /tmp/
 
 # Install all apt-get utils and required repos
-RUN apt-get install -y apt-transport-https software-properties-common curl vim && \
+RUN apt-get update && \
+    apt-get upgrade && \
+    # Install add-apt-repository
+    apt-get install -y \
+        software-properties-common && \
     add-apt-repository ppa:signalfx/collectd-release && \
     add-apt-repository ppa:signalfx/collectd-plugin-release && \
     apt-get update && \
-    apt-get -y upgrade && \
-    # Install SignalFx Plugin and collectd
-    apt-get install -y signalfx-collectd-plugin collectd jq && \
+    # Install
+    apt-get install -y \
+        # Install SignalFx Plugin
+        signalfx-collectd-plugin \
+        # Install collectd
+        collectd \
+        # Install helper packages
+        curl \
+        unzip \
+        # Install pip
+        python-pip && \
     grep "VERSION = \"$EXPECTED_PLUGIN_VERSION\"" /opt/signalfx-collectd-plugin/signalfx_metadata.py && \
     collectd -h | grep $EXPECTED_COLLECTD_VERSION && \
     # Clean up existing configs
     rm -rf /etc/collectd && \
     # Install default configs
     mv /tmp/collectd /etc/ && \
-    # Install unzip and pip
-    apt-get install -qy unzip python-pip && \
     # Download the SignalFx docker-collectd-plugin
     curl -L "https://github.com/signalfx/docker-collectd-plugin/archive/master.zip" --output /tmp/master.zip && \
     # Extract the SignalFx docker-collectd-plugin
@@ -42,7 +52,21 @@ RUN apt-get install -y apt-transport-https software-properties-common curl vim &
     # Clean up the docker-collectd-plugin zip file
     rm /tmp/master.zip && \
     # Set correct permissions on startup script
-    chmod +x /.docker/run.sh
+    chmod +x /.docker/run.sh && \
+    # Uninstall helper packages
+    apt-get --purge -y remove \
+        software-properties-common \
+        curl \
+        unzip && \
+    # Clean up packages
+    apt-get autoclean && \
+    apt-get clean && \
+    apt-get autoremove -y && \
+    # Remove extraneous files
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /usr/share/man/* && \
+    rm -rf /usr/share/info/* && \
+    rm -rf /var/cache/man/*
     
 # Change directory and declare startup command
 WORKDIR /.docker/
