@@ -10,8 +10,8 @@ This image allows you to run collectd in a completelly containerized
 environment, but while retaining the ability to report statistics about the
 _host_ the collectd container is running on.
 
-The Signal Fx collectd Docker plugin is also included, and will report metrics
-about your other containers.
+The SignalFx collectd Docker plugin is also included, and will report metrics
+about your containers.
 
 ## How to use this image
 
@@ -24,9 +24,9 @@ docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   /etc:/mnt/etc:ro quay.io/signalfuse/collectd
 ```
 
-If you don't want to report docker metrics from the collectd docker plugin, you
-can leave out the argument that mounts
-the docker socket `-v /var/run/docker.sock:/var/run/docker.sock`.
+If you don't want to report Docker metrics from the SignalFx Docker collectd 
+plugin, then you can leave out the argument that mounts
+the Docker socket `-v /var/run/docker.sock:/var/run/docker.sock`.
 
 ```
 docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \

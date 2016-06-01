@@ -27,7 +27,7 @@ elif [ -e /mnt/hostname ]; then
 #The user did not specify and the host's hostname is unavailable
 #Exit with error code 1
 else
-    echo 1>&2 "ERROR: Unable to find the hostname for the docker host. Please \
+    echo 1>&2 "ERROR: Unable to find the hostname for the Docker host. Please \
 specify a hostname with the option -e \"HOSTNAME=<hostname>\" or by \
 mounting the Docker host's hostname \
 -v <path to host's hostname file>:/mnt/hostname:ro"
@@ -46,7 +46,7 @@ if [ -z "$COLLECTD_FLUSHINTERVAL" ]; then
 	COLLECTD_FLUSHINTERVAL=$COLLECTD_INTERVAL
 fi
 if [ ! -S /var/run/docker.sock ]; then
-    echo "The docker socket was not mounted to the container, the collectd docker plugin will be disabled"
+    echo "The Docker socket was not mounted into this container, the SignalFx Docker collectd plugin will be disabled"
     rm /etc/collectd/managed_config/dockerplugin.conf
 fi
 AWS_UNIQUE_ID=$(curl -s --connect-timeout 1 http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId + "_" + .accountId + "_" + .region')
