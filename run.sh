@@ -18,13 +18,11 @@ fi
 #If the user sets COLLECTD_HOSTNAME then assign to HOSTNAME
 if [ -n "$COLLECTD_HOSTNAME" ]; then
 	HOSTNAME="Hostname \"$COLLECTD_HOSTNAME\""
-	echo "Emitting Metrics With Hostname: \"$HOST_HOSTNAME\""
 #If the host's hostname is mounted @ /mnt/etc/hostname, then assign to HOSTNAME
 elif [ -e /mnt/hostname ]; then
     HOST_HOSTNAME=$(cat /mnt/hostname)
     if [ -n "$HOST_HOSTNAME" ]; then
         HOSTNAME="Hostname \"$HOST_HOSTNAME\""
-        echo "Emitting Metrics With Hostname: \"$HOST_HOSTNAME\""
     fi
 #The user did not specify and the host's hostname is unavailable
 #Exit with error code 1
@@ -47,7 +45,10 @@ fi
 if [ -z "$COLLECTD_FLUSHINTERVAL" ]; then
 	COLLECTD_FLUSHINTERVAL=$COLLECTD_INTERVAL
 fi
-
+if [ ! -S /var/run/docker.sock ]; then
+    echo "The docker socket was not mounted to the container, the collectd docker plugin will be disabled"
+    rm /etc/collectd/managed_config/dockerplugin.conf
+fi
 AWS_UNIQUE_ID=$(curl -s --connect-timeout 1 http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId + "_" + .accountId + "_" + .region')
 
 [ -n "$AWS_UNIQUE_ID" ] && AWS_VALUE="?sfxdim_AWSUniqueId=$AWS_UNIQUE_ID"
