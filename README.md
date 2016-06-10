@@ -18,10 +18,13 @@ about your containers.
 Run collectd with the default configuration with the following command:
 
 ```
-docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /etc/hostname:/mnt/hostname:ro -v /proc:/mnt/proc:ro -v \
+docker run --privileged \
+  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -v /etc/hostname:/mnt/hostname:ro \
+  -v /proc:/mnt/proc:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  /etc:/mnt/etc:ro quay.io/signalfuse/collectd
+  -v /etc:/mnt/etc:ro \
+  quay.io/signalfuse/collectd
 ```
 
 If you don't want to report Docker metrics from the SignalFx Docker collectd 
@@ -29,9 +32,12 @@ plugin, then you can leave out the argument that mounts
 the Docker socket `-v /var/run/docker.sock:/var/run/docker.sock`.
 
 ```
-docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /etc/hostname:/mnt/hostname:ro -v /proc:/mnt/proc:ro -v \
-  /etc:/mnt/etc:ro quay.io/signalfuse/collectd
+docker run --privileged \
+  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -v /etc/hostname:/mnt/hostname:ro \
+  -v /proc:/mnt/proc:ro \
+  -v /etc:/mnt/etc:ro \
+  quay.io/signalfuse/collectd
 ```
 
 If you just want to look around inside the image, you can run `bash`.
@@ -39,10 +45,13 @@ Then you can run `/opt/setup/run.sh` yourself to configure the bind mount
 and start collectd.
 
 ```
-docker run -ti --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /etc/hostname:/mnt/hostname:ro -v /proc:/mnt/proc:ro \
+docker run -ti --privileged \
+  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -v /etc/hostname:/mnt/hostname:ro \
+  -v /proc:/mnt/proc:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /etc:/mnt/etc:ro quay.io/signalfuse/collectd bash
+  -v /etc:/mnt/etc:ro \
+  quay.io/signalfuse/collectd bash
 ```
 
 If you don't want to pass your API token through a command-line argument, you
@@ -53,17 +62,22 @@ can put `SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX` into a file (that you can
 docker run --privileged --env-file=token.env \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /proc:/mnt/proc:ro -v /etc:/mnt/etc:ro quay.io/signalfuse/collectd
+  -v /proc:/mnt/proc:ro \
+  -v /etc:/mnt/etc:ro \
+  quay.io/signalfuse/collectd
 ```
 
 On CoreOS because /etc/*-release are symlinks you want to mount
 /usr/share/coreos in place of /etc.
 
 ```
-docker run --privileged -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /etc/hostname:/mnt/hostname:ro -v /proc:/mnt/proc:ro \
+docker run --privileged \
+  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -v /etc/hostname:/mnt/hostname:ro \
+  -v /proc:/mnt/proc:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /usr/share/coreos:/mnt/etc:ro quay.io/signalfuse/collectd
+  -v /usr/share/coreos:/mnt/etc:ro \
+  quay.io/signalfuse/collectd
 ```
 
 ## FAQ
