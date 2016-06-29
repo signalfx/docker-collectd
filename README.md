@@ -6,7 +6,7 @@
 statistics periodically and provides mechanisms to store the values in a
 variety of ways, for example in RRD files.
 
-This image allows you to run collectd in a completelly containerized
+This image allows you to run collectd in a completely containerized
 environment, but while retaining the ability to report statistics about the
 _host_ the collectd container is running on.
 
@@ -135,3 +135,6 @@ but you also can set the following:
 1. `COLLECTD_FLUSHINTERVAL` - if set we will set `write_http`'s flush interval
    to the value provided, otherwise a default value of what COLLECTD_INTERVAL
    is set to will be used.
+
+### Extending
+[Click this link to read about Extending SignalFx Docker collectd image](./docs/EXTENDING.md)
