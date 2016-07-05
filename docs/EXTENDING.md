@@ -19,7 +19,7 @@ named *Dockerfile*. Read Docker's official
 [documentation](https://docs.docker.com/engine/reference/builder/) for more 
 information on Dockerfiles.
 
-A new Dockerfile should be crated in an empty directory. This 
+A new Dockerfile should be created in an empty directory. This 
 directory will act as the image workspace. The SignalFx collectd Docker 
 image is located at [quay.io](https://quay.io/repository/signalfuse/collectd). 
 This image should be extended in a new Docker image.  
@@ -92,8 +92,8 @@ RUN <shell commands>
 The *WORKDIR* command is used to set the working directory in the Dockerfile.
 At the end of the file, the working directory should be set to /.docker/.
 This is where the *run.sh* script is stored in the base Docker image. Custom
-scripts should be copied here if they need to execute when the container starts
-.
+scripts should be copied here if they need to execute when the container 
+starts.
 
 ```Dockerfile
 # Reference base image
