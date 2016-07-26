@@ -4,8 +4,8 @@ FROM alpine:3.4
 MAINTAINER SignalFx Support <support+collectd@signalfx.com>
 
 # Define collectd and plugin versions
-ENV EXPECTED_PLUGIN_VERSION 0.0.22
-ENV EXPECTED_COLLECTD_VERSION 5.5.1-r0
+ARG EXPECTED_PLUGIN_VERSION=0.0.22
+ARG EXPECTED_COLLECTD_VERSION=5.5.1-r0
 
 # Add default collectd configs
 ADD configs /tmp/
