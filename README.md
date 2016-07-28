@@ -120,21 +120,28 @@ Yes! You are required to set the `SF_API_TOKEN` and provide a hostname either
 by mounting `/etc/hostname` to `/mnt/hostname` or setting `COLLECTD_HOSTNAME`,
 but you also can set the following:
 
-1. `COLLECTD_HOSTNAME` - if set we will set this in
-   `/etc/collectd/collectd.conf`.  If the environment variable is not set, 
-   we will attempt to cat `/mnt/hostname` for the host's hostname.  If no hostname
-   is discovered, we will exit with an error code of 1 and display a message
-   indicating that a hostname could not be found.
-1. `COLLECTD_INTERVAL` - if set we will use the specified interval for collectd
-   and the plugin, otherwise the default interval is 10 seconds.
-1. `COLLECTD_CONFIGS` - if set we will include `$COLLECTD_CONFIGS/*.conf` in
-   collectd.conf where you can include any other plugins you want to enable.
-   These of course would need to be mounted in the container with -v.
-1. `COLLECTD_BUFFERSIZE` - if set we will set `write_http`'s buffersize to the
-   value provided, otherwise a default value of 16384 will be used.
-1. `COLLECTD_FLUSHINTERVAL` - if set we will set `write_http`'s flush interval
-   to the value provided, otherwise a default value of what COLLECTD_INTERVAL
-   is set to will be used.
+| Environment Variable | Description | Example |
+| -------------------- | ----------- | ------- |
+| `COLLECTD_BUFFERSIZE` | if set we will set `write_http`'s buffersize to the value provided, otherwise a default value of 16384 will be used. | `-e "COLLECTD_BUFFERSIZE=<size>"` |
+| `COLLECTD_CONFIGS` | if set we will include `$COLLECTD_CONFIGS/*.conf` in collectd.conf where you can include any other plugins you want to enable. These of course would need to be mounted in the container with -v. | `-e "COLLECTD_CONFIGS=<path to confs>"` |
+| `COLLECTD_FLUSHINTERVAL` | if set we will set `write_http`'s flush interval to the value provided, otherwise a default value of what COLLECTD_INTERVAL is set to will be used. | `-e "COLLECTD_FLUSHINTERVAL=<interval>"` |
+| `COLLECTD_HOSTNAME` | if set we will set this in `/etc/collectd/collectd.conf`.  If the environment variable is not set, we will attempt to cat `/mnt/hostname` for the host's hostname.  If no hostname is discovered, we will exit with an error code of 1 and display a message indicating that a hostname could not be found. | `-e "COLLECTD_HOSTNAME=<hostname>"` |
+| `COLLECTD_INTERVAL` | if set we will use the specified interval for collectd and the plugin, otherwise the default interval is 10 seconds. | `-e "COLLECTD_INTERVAL=<interval>"` |
+| `DISABLE_AGGREGATION` | If set to any value, disables the collectd aggregation plugin | `-e "DISABLE_AGGREGATION=True"` |
+| `DISABLE_CPU` | If set to any value, disables the collectd cpu plugin | `-e "DISABLE_CPU=True"` |
+| `DISABLE_CPUFREQ` | If set to any value, disables the collectd cpu frequency plugin | `-e "DISABLE_CPUFREQ=True"` |
+| `DISABLE_DF` | If set to any value, disables the collectd df plugin | `-e "DISABLE_DF=True"` |
+| `DISABLE_DISK` | If set to any value, disables the collectd disk plugin | `-e "DISABLE_DISK=True"` |
+| `DISABLE_DOCKER` | If set to any value, disables the collectd docker plugin | `-e "DISABLE_DOCKER=True"` |
+| `DISABLE_HOST_MONITORING` | If set to any value, disables the collectd aggregation, cpu, cpu frequency, df, disk, docker, interface, load, memory, protocols, vmem, uptime, SignalFx collectd, and write http plugins | `-e "DISABLE_HOST_MONITORING=True"` |
+| `DISABLE_INTERFACE` | If set to any value, disables the collectd interface plugin | `-e "DISABLE_INTERFACE=True"` |
+| `DISABLE_LOAD` | If set to any value, disables the collectd load plugin | `-e "DISABLE_LOAD=True"` |
+| `DISABLE_MEMORY` | If set to any value, disables the collectd memory plugin | `-e "DISABLE_MEMORY=True"` |
+| `DISABLE_PROTOCOLS` | If set to any value, disables the collectd protocols plugin | `-e "DISABLE_PROTOCOLS=True"` |
+| `DISABLE_VMEM` | If set to any value, disables the collectd vmem plugin | `-e "DISABLE_VMEM=True"` |
+| `DISABLE_UPTIME` | If set to any value, disables the collectd uptime plugin | `-e "DISABLE_UPTIME=True"` |
+| `DISABLE_SFX_PLUGIN` | If set to any value, disables the SignalFx collectd plugin | `-e "DISABLE_SFX_PLUGIN=True"` |
+| `DISABLE_WRITE_HTTP` | If set to any value, disables the collectd write http plugin | `-e "DISABLE_WRITE_HTTP=True"` |
 
 ### Extending
 [Click this link to read about Extending SignalFx Docker collectd image](./docs/EXTENDING.md)
