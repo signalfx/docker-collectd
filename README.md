@@ -142,6 +142,7 @@ but you also can set the following:
 | `DISABLE_UPTIME` | If set to any value, disables the collectd uptime plugin | `-e "DISABLE_UPTIME=True"` |
 | `DISABLE_SFX_PLUGIN` | If set to any value, disables the SignalFx collectd plugin | `-e "DISABLE_SFX_PLUGIN=True"` |
 | `DISABLE_WRITE_HTTP` | If set to any value, disables the collectd write http plugin | `-e "DISABLE_WRITE_HTTP=True"` |
+| `DOCKER_TIMEOUT` | The number of seconds calls to the Docker API should wait to timeout | `-e "DOCKER_TIMEOUT=100"` |
 
 ### Extending
 [Click this link to read about Extending SignalFx Docker collectd image](./docs/EXTENDING.md)
