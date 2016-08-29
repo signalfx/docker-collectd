@@ -177,7 +177,7 @@ if [ ! -z "$DISABLE_AGGREGATION" ]; then
 fi
 
 # Process timeout for Docker
-if [ ! -z "$DOCKER_TIMEOUT" ]; then
+if [ -n "$DOCKER_TIMEOUT" ]; then
     sed -i -e '/\bTimeout\b/I c\' $DOCKER_CONF
     sed -i -e '/<Module dockerplugin>/a \'"    Timeout ${DOCKER_TIMEOUT}" $DOCKER_CONF
     cat $DOCKER_CONF
