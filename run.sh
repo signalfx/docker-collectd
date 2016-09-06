@@ -183,6 +183,13 @@ if [ -n "$DOCKER_TIMEOUT" ]; then
     cat $DOCKER_CONF
 fi
 
+# Process Interval for Docker
+if [ -n "$DOCKER_INTERVAL" ]; then
+    sed -i -e '/\bInterval\b/I c\' $DOCKER_CONF
+    sed -i -e '/<Module dockerplugin>/a \'"    Interval ${DOCKER_INTERVAL}" $DOCKER_CONF
+    cat $DOCKER_CONF
+fi
+
 # Process option to disable docker plugin
 if [ ! -z "$DISABLE_DOCKER" ]; then
     if [ -f "$DOCKER_CONF" ]; then
