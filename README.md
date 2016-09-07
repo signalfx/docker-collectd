@@ -143,6 +143,7 @@ but you also can set the following:
 | `DISABLE_SFX_PLUGIN` | If set to any value, disables the SignalFx collectd plugin | `-e "DISABLE_SFX_PLUGIN=True"` |
 | `DISABLE_WRITE_HTTP` | If set to any value, disables the collectd write http plugin | `-e "DISABLE_WRITE_HTTP=True"` |
 | `DOCKER_TIMEOUT` | The number of seconds calls to the Docker API should wait to timeout | `-e "DOCKER_TIMEOUT=3"` |
+| `DOCKER_INTERVAL` | If set we will use the specified interval for the docker plugin, otherwise the global collectd interval (defaulted to 10 secs) will be used | `-e "DOCKER_INTERVAL=10"` |
 
 ### Extending
 [Click this link to read about Extending SignalFx Docker collectd image](./docs/EXTENDING.md)
