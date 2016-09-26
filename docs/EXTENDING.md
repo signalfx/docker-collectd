@@ -62,7 +62,7 @@ MAINTAINER <Name> <Contact Info>
 
 # Add files
 ADD example-plugin/example-file.py /usr/share/collectd
-ADD example-plugin/example-file.conf /usr/share/collectd
+ADD example-plugin/example-file.conf /etc/collectd/managed_config
 ```
 
 ### RUN
@@ -81,7 +81,7 @@ MAINTAINER <Name> <Contact Info>
 
 # Add files
 ADD example-plugin/example-file.py /usr/share/collectd
-ADD example-plugin/example-file.conf /usr/share/collectd
+ADD example-plugin/example-file.conf /etc/collectd/managed_config
 
 # Run shell commands
 RUN <shell commands>
@@ -104,7 +104,7 @@ MAINTAINER <Name> <Contact Info>
 
 # Add files
 ADD example-plugin/example-file.py /usr/share/collectd
-ADD example-plugin/example-file.conf /usr/share/collectd
+ADD example-plugin/example-file.conf /etc/collectd/managed_config
 
 # Run shell commands
 RUN <shell commands>
@@ -129,7 +129,7 @@ MAINTAINER <Name> <Contact Info>
 
 # Add files
 ADD example-plugin/example-file.py /usr/share/collectd
-ADD example-plugin/example-file.conf /usr/share/collectd
+ADD example-plugin/example-file.conf /etc/collectd/managed_config
 
 # Run shell commands
 RUN <shell commands>
@@ -156,7 +156,7 @@ MAINTAINER <Name> <Contact Info>
 
 # Add files
 ADD example-plugin/example-file.py /usr/share/collectd
-ADD example-plugin/example-file.conf /usr/share/collectd
+ADD example-plugin/example-file.conf /etc/collectd/managed_config
 
 # Adding custom startup script
 ADD example-script.sh /.docker/
