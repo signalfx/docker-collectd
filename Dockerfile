@@ -7,7 +7,7 @@ MAINTAINER SignalFx Support <support+collectd@signalfx.com>
 ENV DEBIAN_FRONTEND noninteractive
 
 # Build-time arguments
-ARG EXPECTED_PLUGIN_VERSION=0.0.25
+ARG EXPECTED_PLUGIN_VERSION=0.0.27
 ARG EXPECTED_COLLECTD_VERSION=5.5.2.sfx0
 
 # Setup our collectd
