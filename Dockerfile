@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Build-time arguments
 ARG EXPECTED_PLUGIN_VERSION=0.0.27
-ARG EXPECTED_COLLECTD_VERSION=5.5.2.sfx0
+ARG EXPECTED_COLLECTD_VERSION=5.6.0.sfx0
 
 # Setup our collectd
 ADD ["configs", "/tmp/"]
