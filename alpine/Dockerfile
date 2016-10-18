@@ -3,17 +3,17 @@ FROM alpine:3.4
 MAINTAINER SignalFx Support <support+collectd@signalfx.com>
 
 # Specify Versions
-ARG PLUGIN_VERSION=0.0.27
+ARG PLUGIN_VERSION=0.0.28
 ARG PLUGIN_PKG=sfx0
-ARG COLLECTD_VERSION=5.5.2
+ARG COLLECTD_VERSION=5.6.1
 ARG COLLECTD_PKG=sfx0
 
 # Expected versions to check against
 ARG EXPECTED_COLLECTD_VERSION=${COLLECTD_VERSION}
 ARG EXPECTED_PLUGIN_VERSION=${PLUGIN_VERSION}
 
-ARG COLLECTD_ADDR=https://dl.signalfx.com/apks/collectd/alpine/release/collectd/x86_64
-ARG PLUGIN_ADDR=https://dl.signalfx.com/apks/signalfx-collectd-plugin/alpine/release/signalfx-collectd-plugin/x86_64
+ARG COLLECTD_ADDR=https://dl.signalfx.com/apks/collectd/alpine/3.4/release/collectd/x86_64
+ARG PLUGIN_ADDR=https://dl.signalfx.com/apks/signalfx-collectd-plugin/alpine/3.4/release/signalfx-collectd-plugin/x86_64
 
 # Setup our collectd
 COPY ["configs", "/tmp/"]
@@ -31,16 +31,18 @@ RUN apk update \
                unzip \
                curl \
     # Make directory for local signalfx-collectd repository
-    && mkdir -p /tmp/repo/collectd/x86_64 \
-    # Back up apk repositories file
-    && cp /etc/apk/repositories /tmp/repo \
+    && mkdir -p /repo/collectd/x86_64 \
     # Change to temporary repo
-    && cd /tmp/repo/collectd/x86_64 \
+    && cd /repo/collectd/x86_64 \
     # Curl down signalfx-collectd repository
     && curl -LOk ${COLLECTD_ADDR}/APKINDEX.tar.gz \
     && curl -LOk ${COLLECTD_ADDR}/collectd-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-apache-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
+    && curl -LOk ${COLLECTD_ADDR}/collectd-ascent-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
+    && curl -LOk ${COLLECTD_ADDR}/collectd-bind-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-curl-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
+    && curl -LOk ${COLLECTD_ADDR}/collectd-dev-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
+    && curl -LOk ${COLLECTD_ADDR}/collectd-doc-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-iptables-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-java-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-mysql-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
@@ -49,38 +51,29 @@ RUN apk update \
     && curl -LOk ${COLLECTD_ADDR}/collectd-perl-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-postgresql-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-python-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
+    && curl -LOk ${COLLECTD_ADDR}/collectd-rrdtool-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
+    && curl -LOk ${COLLECTD_ADDR}/collectd-sensors-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-snmp-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-virt-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
     && curl -LOk ${COLLECTD_ADDR}/collectd-write_http-${COLLECTD_VERSION}-r${COLLECTD_PKG}.apk \
-    && ls -la /tmp/repo/collectd/x86_64 \
+    && ls -la /repo/collectd/x86_64 \
     # Add locally stored signalfx-collectd repository
-    && echo /tmp/repo/collectd >> /etc/apk/repositories \
+    && echo /repo/collectd >> /etc/apk/repositories \
     # Make directory for signalfx-collectd-plugin repository
-    && mkdir -p /tmp/repo/signalfx-collectd-plugin/x86_64/ \
-    && cd /tmp/repo/signalfx-collectd-plugin/x86_64/ \
+    && mkdir -p /repo/signalfx-collectd-plugin/x86_64/ \
+    && cd /repo/signalfx-collectd-plugin/x86_64/ \
     # Curl down signalfx-collectd-plugin repository
     && curl -LOk ${PLUGIN_ADDR}/APKINDEX.tar.gz \
     && curl -LOk ${PLUGIN_ADDR}/signalfx-collectd-plugin-${PLUGIN_VERSION}-r${PLUGIN_PKG}.apk \
-    && ls -la /tmp/repo/signalfx-collectd-plugin/x86_64 \
+    && ls -la /repo/signalfx-collectd-plugin/x86_64 \
     # Add locally stored signalfx-collect-plugin repository
-    && echo /tmp/repo/signalfx-collectd-plugin >> /etc/apk/repositories \
+    && echo /repo/signalfx-collectd-plugin >> /etc/apk/repositories \
     && cat /etc/apk/repositories \
-    # Update apk repository data
+    # # Update apk repository data
     && apk update \
     # Install collectd and signalfx-collectd-plugin
     && apk add collectd \
-               collectd-apache \
-               collectd-curl \
-               collectd-iptables \
-               collectd-java \
-               collectd-mysql \
-               collectd-network \
-               collectd-nginx \
-               collectd-perl \
-               collectd-postgresql \
                collectd-python \
-               collectd-snmp \
-               collectd-virt \
                collectd-write_http \
                signalfx-collectd-plugin \
     && grep "VERSION = \"$EXPECTED_PLUGIN_VERSION\"" /opt/signalfx-collectd-plugin/signalfx_metadata.py \
@@ -104,9 +97,6 @@ RUN apk update \
     && unzip /tmp/integrations.zip -d /tmp \
     # Move the managed config into place
     && cp /tmp/integrations-master/collectd-docker/10-docker.conf /etc/collectd/managed_config/ \
-    # Restore original apk repositories file
-    && rm /etc/apk/repositories \
-    && cp /tmp/repo/repositories /etc/apk/ \
     # Set correct permissions on startup script
     && cd /run \
     && chmod +x run.sh \

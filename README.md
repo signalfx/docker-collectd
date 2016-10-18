@@ -19,6 +19,7 @@ Run collectd with the default configuration with the following command:
 
 ```
 docker run --privileged \
+  --net="host" \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /proc:/mnt/proc:ro \
@@ -33,6 +34,7 @@ the Docker socket `-v /var/run/docker.sock:/var/run/docker.sock`.
 
 ```
 docker run --privileged \
+  --net="host" \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /proc:/mnt/proc:ro \
@@ -46,6 +48,7 @@ and start collectd.
 
 ```
 docker run -ti --privileged \
+  --net="host" \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /proc:/mnt/proc:ro \
@@ -60,6 +63,7 @@ can put `SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX` into a file (that you can
 
 ```
 docker run --privileged --env-file=token.env \
+  --net="host" \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /proc:/mnt/proc:ro \
@@ -72,6 +76,7 @@ On CoreOS because /etc/*-release are symlinks you want to mount
 
 ```
 docker run --privileged \
+  --net="host" \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /proc:/mnt/proc:ro \
@@ -88,6 +93,10 @@ Yes. Collectd needs access to the parent host's `/proc` filesystem to get
 statistics. It's possible to run collectd without passing the parent host's
 `/proc` filesystem without running the container as privileged, but the metrics
 would not be accurate.
+
+### Do I need to provide the network flag?
+
+Yes.  Setting the `--net` option to `"host"` allows the container to see the host's networking stack and provide accurate information.
 
 ### Do I need to pass in /etc?
 
