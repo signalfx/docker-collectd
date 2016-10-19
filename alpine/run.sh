@@ -6,6 +6,24 @@ COLLECTD_CONF=/etc/collectd/collectd.conf
 DOCKER_CONF=/etc/collectd/managed_config/10-docker.conf
 WRITE_HTTP_CONF=/etc/collectd/managed_config/10-write_http-plugin.conf
 PLUGIN_CONF=/etc/collectd/managed_config/20-signalfx-plugin.conf
+ADD_DIMENSIONS=""
+
+if [ ! -z "$DIMENSIONS" ]; then
+    first=true
+    for i in $DIMENSIONS; do
+        sanatized=$(echo $i | tr '=' ' ')
+        key=$(echo $sanatized | cut -d " " -f 1)
+        value=$(echo $sanatized | cut -d " " -f 2)
+        if [ ! -z $key ] && [ ! -z $value ] ; then
+            if $first ; then
+                first=false
+            else
+                ADD_DIMENSIONS="$ADD_DIMENSIONS\&"
+            fi
+            ADD_DIMENSIONS="$ADD_DIMENSIONS""sfxdim_$key=$value"
+        fi
+    done
+fi
 
 if [ ! -z "$DISABLE_HOST_MONITORING" ]; then
     DISABLE_AGGREGATION=True
@@ -217,6 +235,14 @@ if [ ! -z "$DISABLE_WRITE_HTTP" ]; then
     fi
 else
     sed -i -e "s#%%%AWS_PATH%%%#$AWS_VALUE#g" $WRITE_HTTP_CONF
+    if [ -n "$ADD_DIMENSIONS" ]; then
+        if [ -z "$AWS_VALUE" ] ; then
+            ADD_DIMENSIONS="?$ADD_DIMENSIONS"
+        else
+            ADD_DIMENSIONS="&$ADD_DIMENSIONS"
+        fi
+        sed -i -e "s#%%%DIMENSIONS%%%#$ADD_DIMENSIONS#g" $WRITE_HTTP_CONF
+    fi
     sed -i -e "s#%%%BUFFERSIZE%%%#$COLLECTD_BUFFERSIZE#g" $WRITE_HTTP_CONF
     sed -i -e "s#%%%FLUSHINTERVAL%%%#$COLLECTD_FLUSHINTERVAL#g" $WRITE_HTTP_CONF
     sed -i -e "s#%%%INGEST_HOST%%%#$SF_INGEST_HOST#g" $WRITE_HTTP_CONF
