@@ -241,8 +241,8 @@ else
         else
             ADD_DIMENSIONS="&$ADD_DIMENSIONS"
         fi
-        sed -i -e "s#%%%DIMENSIONS%%%#$ADD_DIMENSIONS#g" $WRITE_HTTP_CONF
     fi
+    sed -i -e "s#%%%DIMENSIONS%%%#$ADD_DIMENSIONS#g" $WRITE_HTTP_CONF
     sed -i -e "s#%%%BUFFERSIZE%%%#$COLLECTD_BUFFERSIZE#g" $WRITE_HTTP_CONF
     sed -i -e "s#%%%FLUSHINTERVAL%%%#$COLLECTD_FLUSHINTERVAL#g" $WRITE_HTTP_CONF
     sed -i -e "s#%%%INGEST_HOST%%%#$SF_INGEST_HOST#g" $WRITE_HTTP_CONF
