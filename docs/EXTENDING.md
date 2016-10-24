@@ -21,7 +21,11 @@ information on Dockerfiles.
 
 A new Dockerfile should be created in an empty directory. This 
 directory will act as the image workspace. The SignalFx collectd Docker 
-image is located at [quay.io](https://quay.io/repository/signalfuse/collectd). 
+image is located at 
+[quay.io/signalfuse/collectd](https://quay.io/repository/signalfuse/collectd)
+for Ubuntu based image and 
+[quay.io/signalfuse/collectd-alpine](https://quay.io/repository/signalfuse/collectd-alpine)
+for the Alpine Linux based image. 
 This image should be extended in a new Docker image.  
 
 ```Dockerfile
@@ -90,6 +94,8 @@ RUN <shell commands>
 ### WORKDIR
 
 The *WORKDIR* command is used to set the working directory in the Dockerfile.
+
+*Ubuntu Based Image*\
 At the end of the file, the working directory should be set to /.docker/.
 This is where the *run.sh* script is stored in the base Docker image. Custom
 scripts should be copied here if they need to execute when the container 
@@ -113,12 +119,28 @@ RUN <shell commands>
 WORKDIR /.docker/
 ```
 
+### ENTRYPOINT
+*ENTRYPOINT* sets the executable that should be executed when the docker image
+starts.  
+
+On Alpine Linux we must explicitly set the *ENTRYPOINT* to the included shell.
+
+```Dockerfile
+# Set the shell as the entry point
+ENTRYPOINT sh
+```
+
 ### CMD
 
 *CMD* executes an executable when the container built from a Docker image 
-starts. The SignalFx collectd Docker image has a script located in
-/.docker/ and named *run.sh*. This script must be the last script executed by
+starts. The SignalFx collectd Docker image has a script named *run.sh*. This 
+script must be the last script executed by
 *CMD*
+
+On the Alpine linux based image, the *run.sh* script is located at 
+`/run/run.sh`.
+
+On the Ubuntu based image, the *run.sh* script is located at `/.docker/run.sh`.
 
 ```Dockerfile
 # Reference base image
