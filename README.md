@@ -13,6 +13,13 @@ _host_ the collectd container is running on.
 The SignalFx collectd Docker plugin is also included, and will report metrics
 about your containers.
 
+## Image Options
+
+| Base Image | Image Name |
+| ---------- | ------------ |
+| Ubuntu | `quay.io/signalfuse/collectd` |
+| Alpine Linux |  `quay.io/signalfuse/collectd-alpine` |
+
 ## How to use this image
 
 Run collectd with the default configuration with the following command:
@@ -64,6 +71,21 @@ can put `SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX` into a file (that you can
 ```
 docker run --privileged --env-file=token.env \
   --net="host" \
+  -v /etc/hostname:/mnt/hostname:ro \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /proc:/mnt/proc:ro \
+  -v /etc:/mnt/etc:ro \
+  quay.io/signalfuse/collectd
+```
+
+If you want to apply custom dimensions and values to all metrics, you set the 
+environment variable `DIMENSIONS` to a string of space separated  Key/Value 
+pairs defined `KEY=VALUE`.
+
+```
+docker run --privileged --env-file=token.env \
+  --net="host" \
+  -e DIMENSIONS="hello=world foo=bar"
   -v /etc/hostname:/mnt/hostname:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /proc:/mnt/proc:ro \
@@ -136,6 +158,7 @@ but you also can set the following:
 | `COLLECTD_FLUSHINTERVAL` | if set we will set `write_http`'s flush interval to the value provided, otherwise a default value of what COLLECTD_INTERVAL is set to will be used. | `-e "COLLECTD_FLUSHINTERVAL=<interval>"` |
 | `COLLECTD_HOSTNAME` | if set we will set this in `/etc/collectd/collectd.conf`.  If the environment variable is not set, we will attempt to cat `/mnt/hostname` for the host's hostname.  If no hostname is discovered, we will exit with an error code of 1 and display a message indicating that a hostname could not be found. | `-e "COLLECTD_HOSTNAME=<hostname>"` |
 | `COLLECTD_INTERVAL` | if set we will use the specified interval for collectd and the plugin, otherwise the default interval is 10 seconds. | `-e "COLLECTD_INTERVAL=<interval>"` |
+| `DIMENSIONS` | If set with a string of space separated `key=value` dimension pairs, then each metric dipatched will be tagged with those dimensions. | `-e DIMENSIONS="foo=bar hello=world"` |
 | `DISABLE_AGGREGATION` | If set to any value, disables the collectd aggregation plugin | `-e "DISABLE_AGGREGATION=True"` |
 | `DISABLE_CPU` | If set to any value, disables the collectd cpu plugin | `-e "DISABLE_CPU=True"` |
 | `DISABLE_CPUFREQ` | If set to any value, disables the collectd cpu frequency plugin | `-e "DISABLE_CPUFREQ=True"` |
