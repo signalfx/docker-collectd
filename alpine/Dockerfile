@@ -3,7 +3,7 @@ FROM alpine:3.4
 MAINTAINER SignalFx Support <support+collectd@signalfx.com>
 
 # Specify Versions
-ARG PLUGIN_VERSION=0.0.28
+ARG PLUGIN_VERSION=0.0.29
 ARG PLUGIN_PKG=sfx0
 ARG COLLECTD_VERSION=5.6.1
 ARG COLLECTD_PKG=sfx0
