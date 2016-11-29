@@ -6,7 +6,18 @@ COLLECTD_CONF=/etc/collectd/collectd.conf
 DOCKER_CONF=/etc/collectd/managed_config/10-docker.conf
 WRITE_HTTP_CONF=/etc/collectd/managed_config/10-write_http-plugin.conf
 PLUGIN_CONF=/etc/collectd/managed_config/20-signalfx-plugin.conf
+FILTERING_CONF=/etc/collectd/filtering_config/filtering.conf
 ADD_DIMENSIONS=""
+
+is_true()
+{
+    echo "$0"
+    if [ -n "$1" ] && { [ "$1" == "true" ] || [ "$1" == "True" ] || [ "$1" == "TRUE" ]; }; then
+        return 0
+    else
+        return 1
+    fi
+};
 
 if [ ! -z "$DIMENSIONS" ]; then
     first=true
@@ -25,7 +36,7 @@ if [ ! -z "$DIMENSIONS" ]; then
     done
 fi
 
-if [ ! -z "$DISABLE_HOST_MONITORING" ]; then
+if is_true $DISABLE_HOST_MONITORING ; then
     DISABLE_AGGREGATION=True
     DISABLE_CPU=True
     DISABLE_CPUFREQ=True
@@ -85,7 +96,9 @@ if [ ! -S /var/run/docker.sock ]; then
     echo "The Docker socket was not mounted into this container, the SignalFx Docker collectd plugin will be disabled"
     rm /etc/collectd/managed_config/dockerplugin.conf
 fi
-if [ -z "$DISABLE_DISK" ]; then
+if is_true $DISABLE_DISK ; then
+    DISK=$''
+else
     DISK=$'LoadPlugin disk \
 \
 <Plugin "disk"> \
@@ -93,25 +106,25 @@ if [ -z "$DISABLE_DISK" ]; then
   Disk "/^dm-\d+$/" \
   IgnoreSelected "true" \
 </Plugin>'
-else
-    DISK=$''
 fi
-if [ -z "$DISABLE_CPU" ]; then
-    CPU=$'LoadPlugin cpu'
-else
+if is_true $DISABLE_CPU ; then
     CPU=$''
-fi
-if [ -z "$DISABLE_CPUFREQ" ]; then
-    CPUFREQ=$'LoadPlugin cpufreq'
 else
+    CPU=$'LoadPlugin cpu'
+fi
+if is_true $DISABLE_CPUFREQ ; then
     CPUFREQ=$''
-fi
-if [ -z "$DISABLE_DF" ]; then
-    DF=$'LoadPlugin df'
 else
-    DF=$''
+    CPUFREQ=$'LoadPlugin cpufreq'
 fi
-if [ -z "$DISABLE_INTERFACE" ]; then
+if is_true $DISABLE_DF ; then
+    DF=$''
+else
+    DF=$'LoadPlugin df'
+fi
+if is_true $DISABLE_INTERFACE ; then
+     INTERFACE=$''
+else
     INTERFACE=$'LoadPlugin interface \
 \
 <Plugin "interface"> \
@@ -121,20 +134,20 @@ if [ -z "$DISABLE_INTERFACE" ]; then
   Interface "/^veth.*$/" \
   IgnoreSelected "true" \
  </Plugin>'
-else
-     INTERFACE=$''
 fi
-if [ -z "$DISABLE_LOAD" ]; then
-    LOAD=$'LoadPlugin load'
-else
+if is_true $DISABLE_LOAD ; then
     LOAD=$''
-fi
-if [ -z "$DISABLE_MEMORY" ]; then
-    MEMORY=$'LoadPlugin memory'
 else
-    MEMORY=$''
+    LOAD=$'LoadPlugin load'
 fi
-if [ -z "$DISABLE_PROTOCOLS" ]; then
+if is_true $DISABLE_MEMORY ; then
+    MEMORY=$''
+else
+    MEMORY=$'LoadPlugin memory'
+fi
+if is_true $DISABLE_PROTOCOLS ; then
+    PROTOCOLS=$''
+else
     PROTOCOLS=$'LoadPlugin protocols\
 \
 <Plugin "protocols"> \
@@ -149,22 +162,20 @@ if [ -z "$DISABLE_PROTOCOLS" ]; then
   Value "/^TcpExt:.*Octets/" \
   IgnoreSelected false \
 </Plugin>'
-else
-    PROTOCOLS=$''
 fi
-if [ -z "$DISABLE_VMEM" ]; then
+if is_true $DISABLE_VMEM ; then
+    VMEM=$''
+else
     VMEM=$'LoadPlugin vmem \
 \
 <Plugin vmem> \
   Verbose false \
 </Plugin>'
-else
-    VMEM=$''
 fi
-if [ -z "$DISABLE_UPTIME" ]; then
-    UPTIME=$'LoadPlugin uptime'
-else
+if is_true $DISABLE_UPTIME ; then
     UPTIME=$''
+else
+    UPTIME=$'LoadPlugin uptime'
 fi
 
 AWS_UNIQUE_ID=$(curl -s --connect-timeout 1 http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId + "_" + .accountId + "_" + .region')
@@ -187,40 +198,46 @@ sed -i -e "s#%%%UPTIME%%%#$UPTIME#g" $COLLECTD_CONF
 sed -i -e "s#%%%INTERNAL_STATS%%%#$INTERNAL_STATS#g" $COLLECTD_CONF
 
 
-# Proces option to disable aggregation plugin
-if [ ! -z "$DISABLE_AGGREGATION" ]; then
+# Process option to disable aggregation plugin
+if is_true $DISABLE_AGGREGATION ; then
     if [ -f "$AGGREGATION_CONF" ]; then
         rm $AGGREGATION_CONF
     fi
 fi
 
 # Process timeout for Docker
-if [ -n "$DOCKER_TIMEOUT" ]; then
+if [ -n "$DOCKER_TIMEOUT" ] ; then
     sed -i -e '/\bTimeout\b/I c\' $DOCKER_CONF
     sed -i -e '/<Module dockerplugin>/a \'"    Timeout ${DOCKER_TIMEOUT}" $DOCKER_CONF
     cat $DOCKER_CONF
 fi
 
 # Process Interval for Docker
-if [ -n "$DOCKER_INTERVAL" ]; then
+if [ -n "$DOCKER_INTERVAL" ] ; then
     sed -i -e '/\bInterval\b/I c\' $DOCKER_CONF
     sed -i -e '/<Module dockerplugin>/a \'"    Interval ${DOCKER_INTERVAL}" $DOCKER_CONF
     cat $DOCKER_CONF
 fi
 
 # Process option to disable docker plugin
-if [ ! -z "$DISABLE_DOCKER" ]; then
+if is_true $DISABLE_DOCKER ; then
     if [ -f "$DOCKER_CONF" ]; then
         rm $DOCKER_CONF
     fi
 fi
 
 # Disable the SFX Plugin or write out configurations
-if [ ! -z "$DISABLE_SFX_PLUGIN" ]; then
+if is_true $DISABLE_SFX_PLUGIN ; then
     if [ -f "$PLUGIN_CONF" ]; then
         rm $PLUGIN_CONF
     fi
-else
+else   
+    if is_true $PER_CORE_CPU_UTIL && ! is_true $DISABLE_AGGREGATION ; then
+        PER_CORE_UTIL_CONFIG="true" 
+    else
+        PER_CORE_UTIL_CONFIG="false" 
+    fi
+    sed -i -e "s#%%%PERCORECPUUTIL%%%#$PER_CORE_UTIL_CONFIG#g" $PLUGIN_CONF
     sed -i -e "s#%%%INGEST_HOST%%%#$SF_INGEST_HOST#g" $PLUGIN_CONF
     sed -i -e "s#%%%API_TOKEN%%%#$SF_API_TOKEN#g" $PLUGIN_CONF
     sed -i -e "s#%%%INTERVAL%%%#$COLLECTD_INTERVAL#g" $PLUGIN_CONF
@@ -228,8 +245,15 @@ else
     cat $PLUGIN_CONF
 fi
 
+# Redirect metrics for per core cpu utilization
+if is_true $PER_CORE_CPU_UTIL && ! is_true $DISABLE_SFX_PLUGIN ; then
+    sed -i -e "s#%%%PER_CORE_UTIL_FILTER%%%#Plugin \"python.signalfx_metadata\"#g" $FILTERING_CONF
+else
+    sed -i -e "s#%%%PER_CORE_UTIL_FILTER%%%##g" $FILTERING_CONF
+fi
+
 # Disable the Write_HTTP plugin or write out configurations
-if [ ! -z "$DISABLE_WRITE_HTTP" ]; then
+if is_true $DISABLE_WRITE_HTTP ; then
     if [ -f "$WRITE_HTTP_CONF" ]; then
         rm $WRITE_HTTP_CONF
     fi
