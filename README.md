@@ -159,21 +159,22 @@ but you also can set the following:
 | `COLLECTD_HOSTNAME` | if set we will set this in `/etc/collectd/collectd.conf`.  If the environment variable is not set, we will attempt to cat `/mnt/hostname` for the host's hostname.  If no hostname is discovered, we will exit with an error code of 1 and display a message indicating that a hostname could not be found. | `-e "COLLECTD_HOSTNAME=<hostname>"` |
 | `COLLECTD_INTERVAL` | if set we will use the specified interval for collectd and the plugin, otherwise the default interval is 10 seconds. | `-e "COLLECTD_INTERVAL=<interval>"` |
 | `DIMENSIONS` | If set with a string of space separated `key=value` dimension pairs, then each metric dipatched will be tagged with those dimensions. | `-e DIMENSIONS="foo=bar hello=world"` |
-| `DISABLE_AGGREGATION` | If set to any value, disables the collectd aggregation plugin | `-e "DISABLE_AGGREGATION=True"` |
-| `DISABLE_CPU` | If set to any value, disables the collectd cpu plugin | `-e "DISABLE_CPU=True"` |
-| `DISABLE_CPUFREQ` | If set to any value, disables the collectd cpu frequency plugin | `-e "DISABLE_CPUFREQ=True"` |
-| `DISABLE_DF` | If set to any value, disables the collectd df plugin | `-e "DISABLE_DF=True"` |
-| `DISABLE_DISK` | If set to any value, disables the collectd disk plugin | `-e "DISABLE_DISK=True"` |
-| `DISABLE_DOCKER` | If set to any value, disables the collectd docker plugin | `-e "DISABLE_DOCKER=True"` |
-| `DISABLE_HOST_MONITORING` | If set to any value, disables the collectd aggregation, cpu, cpu frequency, df, disk, docker, interface, load, memory, protocols, vmem, uptime, SignalFx collectd, and write http plugins | `-e "DISABLE_HOST_MONITORING=True"` |
-| `DISABLE_INTERFACE` | If set to any value, disables the collectd interface plugin | `-e "DISABLE_INTERFACE=True"` |
-| `DISABLE_LOAD` | If set to any value, disables the collectd load plugin | `-e "DISABLE_LOAD=True"` |
-| `DISABLE_MEMORY` | If set to any value, disables the collectd memory plugin | `-e "DISABLE_MEMORY=True"` |
-| `DISABLE_PROTOCOLS` | If set to any value, disables the collectd protocols plugin | `-e "DISABLE_PROTOCOLS=True"` |
-| `DISABLE_VMEM` | If set to any value, disables the collectd vmem plugin | `-e "DISABLE_VMEM=True"` |
-| `DISABLE_UPTIME` | If set to any value, disables the collectd uptime plugin | `-e "DISABLE_UPTIME=True"` |
-| `DISABLE_SFX_PLUGIN` | If set to any value, disables the SignalFx collectd plugin | `-e "DISABLE_SFX_PLUGIN=True"` |
-| `DISABLE_WRITE_HTTP` | If set to any value, disables the collectd write http plugin | `-e "DISABLE_WRITE_HTTP=True"` |
+| `DISABLE_AGGREGATION` | If set to [ True, true, or TRUE ], disables the collectd aggregation plugin | `-e "DISABLE_AGGREGATION=True"` |
+| `DISABLE_CPU` | If set to [ True, true, or TRUE ], disables the collectd cpu plugin | `-e "DISABLE_CPU=True"` |
+| `DISABLE_CPUFREQ` | If set to [ True, true, or TRUE ], disables the collectd cpu frequency plugin | `-e "DISABLE_CPUFREQ=True"` |
+| `DISABLE_DF` | If set to [ True, true, or TRUE ], disables the collectd df plugin | `-e "DISABLE_DF=True"` |
+| `DISABLE_DISK` | If set to [ True, true, or TRUE ], disables the collectd disk plugin | `-e "DISABLE_DISK=True"` |
+| `DISABLE_DOCKER` | If set to [ True, true, or TRUE ], disables the collectd docker plugin | `-e "DISABLE_DOCKER=True"` |
+| `DISABLE_HOST_MONITORING` | If set to [ True, true, or TRUE ], disables the collectd aggregation, cpu, cpu frequency, df, disk, docker, interface, load, memory, protocols, vmem, uptime, SignalFx collectd, and write http plugins | `-e "DISABLE_HOST_MONITORING=True"` |
+| `DISABLE_INTERFACE` | If set to [ True, true, or TRUE ], disables the collectd interface plugin | `-e "DISABLE_INTERFACE=True"` |
+| `DISABLE_LOAD` | If set to [ True, true, or TRUE ], disables the collectd load plugin | `-e "DISABLE_LOAD=True"` |
+| `DISABLE_MEMORY` | If set to [ True, true, or TRUE ], disables the collectd memory plugin | `-e "DISABLE_MEMORY=True"` |
+| `DISABLE_PROTOCOLS` | If set to [ True, true, or TRUE ], disables the collectd protocols plugin | `-e "DISABLE_PROTOCOLS=True"` |
+| `DISABLE_VMEM` | If set to [ True, true, or TRUE ], disables the collectd vmem plugin | `-e "DISABLE_VMEM=True"` |
+| `DISABLE_UPTIME` | If set to [ True, true, or TRUE ], disables the collectd uptime plugin | `-e "DISABLE_UPTIME=True"` |
+| `DISABLE_SFX_PLUGIN` | If set to [ True, true, or TRUE ], disables the SignalFx collectd plugin | `-e "DISABLE_SFX_PLUGIN=True"` |
+| `DISABLE_WRITE_HTTP` | If set to [ True, true, or TRUE ], disables the collectd write http plugin | `-e "DISABLE_WRITE_HTTP=True"` |
+| `PER_CORE_CPU_UTIL` | If set to [True, true, or TRUE], configures the SignalFx collectd plugin to report CPU utilization per core | `-e "PER_CORE_CPU_UTIL=True` |
 | `DOCKER_TIMEOUT` | The number of seconds calls to the Docker API should wait to timeout | `-e "DOCKER_TIMEOUT=3"` |
 | `DOCKER_INTERVAL` | If set we will use the specified interval for the docker plugin, otherwise the global collectd interval (defaulted to 10 secs) will be used | `-e "DOCKER_INTERVAL=10"` |
 
