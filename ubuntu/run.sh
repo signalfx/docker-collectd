@@ -119,7 +119,17 @@ else
 fi
 if is_true $DISABLE_DF ; then
     DF=$''
+elif [ -d "/hostfs" ] ; then
+    DF=$'LoadPlugin df \
+\
+<Plugin "df"> \
+  ChangeRoot "/hostfs" \
+</Plugin>'
 else
+    echo "WARNING: The host's filesystem has not been mounted, but the df \
+plugin is still enabled.  Information from the df plugin may be inaccurate \
+for the host."
+
     DF=$'LoadPlugin df'
 fi
 if is_true $DISABLE_INTERFACE ; then

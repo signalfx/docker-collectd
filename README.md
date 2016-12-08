@@ -30,6 +30,7 @@ docker run --privileged \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /proc:/mnt/proc:ro \
+  -v /:/hostfs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd
@@ -45,6 +46,7 @@ docker run --privileged \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /proc:/mnt/proc:ro \
+  -v /:/hostfs:ro \
   -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd
 ```
@@ -59,6 +61,7 @@ docker run -ti --privileged \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /proc:/mnt/proc:ro \
+  -v /:/hostfs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd bash
@@ -74,6 +77,7 @@ docker run --privileged --env-file=token.env \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /proc:/mnt/proc:ro \
+  -v /:/hostfs:ro \
   -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd
 ```
@@ -89,6 +93,7 @@ docker run --privileged --env-file=token.env \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /proc:/mnt/proc:ro \
+  -v /:/hostfs:ro \
   -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd
 ```
@@ -102,6 +107,7 @@ docker run --privileged \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
   -v /etc/hostname:/mnt/hostname:ro \
   -v /proc:/mnt/proc:ro \
+  -v /:/hostfs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /usr/share/coreos:/mnt/etc:ro \
   quay.io/signalfuse/collectd
@@ -126,6 +132,12 @@ It's actually optional but we use this to get the host OS's version so the
 SignalFx Collectd Plugin will function correctly and report the right
 information.  If you leave it out you will see the container's OS in the
 meta-data for this host.
+
+### Do I need to mount the host's / to /hostfs?
+
+This is a requirement for the df plugin to correctly report information about
+the host and not from the container.  If you explicitly disable the df plugin
+then this is no longer a requirement to run the container.
 
 ### Do I need to provide a host name?
 
