@@ -206,6 +206,7 @@ $ docker run --privileged \
    -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
    -v /etc/hostname:/mnt/hostname:ro \
    -v /proc:/mnt/proc:ro \
+   -v /:/hostfs:ro \
    -v /var/run/docker.sock:/var/run/docker.sock \
    -v /etc:/mnt/etc:ro \
    quay.io/signalfuse/collectd

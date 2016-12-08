@@ -6,10 +6,6 @@ MAINTAINER SignalFx Support <support+collectd@signalfx.com>
 # Install common softwares
 ENV DEBIAN_FRONTEND noninteractive
 
-# Build-time arguments
-ARG EXPECTED_PLUGIN_VERSION=0.0.29
-ARG EXPECTED_COLLECTD_VERSION=5.6.1.sfx0
-
 # Setup our collectd
 ADD ["configs", "/tmp/"]
 
@@ -36,8 +32,6 @@ RUN apt-get update \
         unzip \
         # Install pip
         python-pip \
-    && grep "VERSION = \"$EXPECTED_PLUGIN_VERSION\"" /opt/signalfx-collectd-plugin/signalfx_metadata.py \
-    && collectd -h | grep $EXPECTED_COLLECTD_VERSION \
     # Clean up existing configs
     && rm -rf /etc/collectd \
     # Install default configs
