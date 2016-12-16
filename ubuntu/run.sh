@@ -83,6 +83,12 @@ fi
 if [ -z "$COLLECTD_BUFFERSIZE" ]; then
 	COLLECTD_BUFFERSIZE="16384"
 fi
+if [ -z "$WRITE_HTTP_TIMEOUT" ]; then
+    WRITE_HTTP_TIMEOUT="9000"
+fi
+if [ -z "$LOG_HTTP_ERROR" ]; then
+    LOG_HTTP_ERROR="false"
+fi
 if [ -z "$SF_INGEST_HOST" ]; then
 	SF_INGEST_HOST="https://ingest.signalfx.com"
 fi
@@ -281,6 +287,8 @@ else
     sed -i -e "s#%%%FLUSHINTERVAL%%%#$COLLECTD_FLUSHINTERVAL#g" $WRITE_HTTP_CONF
     sed -i -e "s#%%%INGEST_HOST%%%#$SF_INGEST_HOST#g" $WRITE_HTTP_CONF
     sed -i -e "s#%%%API_TOKEN%%%#$SF_API_TOKEN#g" $WRITE_HTTP_CONF
+    sed -i -e "s#%%%WRITE_HTTP_TIMEOUT%%%#$WRITE_HTTP_TIMEOUT#g" $WRITE_HTTP_CONF
+    sed -i -e "s#%%%LOG_HTTP_ERROR%%%#$LOG_HTTP_ERROR#g" $WRITE_HTTP_CONF
     cat $WRITE_HTTP_CONF
 fi
 
