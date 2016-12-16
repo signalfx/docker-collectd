@@ -170,6 +170,8 @@ but you also can set the following:
 | `COLLECTD_FLUSHINTERVAL` | if set we will set `write_http`'s flush interval to the value provided, otherwise a default value of what COLLECTD_INTERVAL is set to will be used. | `-e "COLLECTD_FLUSHINTERVAL=<interval>"` |
 | `COLLECTD_HOSTNAME` | if set we will set this in `/etc/collectd/collectd.conf`.  If the environment variable is not set, we will attempt to cat `/mnt/hostname` for the host's hostname.  If no hostname is discovered, we will exit with an error code of 1 and display a message indicating that a hostname could not be found. | `-e "COLLECTD_HOSTNAME=<hostname>"` |
 | `COLLECTD_INTERVAL` | if set we will use the specified interval for collectd and the plugin, otherwise the default interval is 10 seconds. | `-e "COLLECTD_INTERVAL=<interval>"` |
+| `WRITE_HTTP_TIMEOUT` | if set we will set `write_http`'s timeout to the value provided, otherwise the default value of WRITE_HTTP_TIMEOUT will be `9000`. | `-e WRITE_HTTP_TIMEOUT=9000` |
+| `LOG_HTTP_ERROR` | if set we will set `write_http`'s LogHttpError settting to the value provided, otherwise the default value of LOG_HTTP_ERROR will be `false`. | `-e LOG_HTTP_ERROR=false` |
 | `DIMENSIONS` | If set with a string of space separated `key=value` dimension pairs, then each metric dipatched will be tagged with those dimensions. | `-e DIMENSIONS="foo=bar hello=world"` |
 | `DISABLE_AGGREGATION` | If set to [ True, true, or TRUE ], disables the collectd aggregation plugin | `-e "DISABLE_AGGREGATION=True"` |
 | `DISABLE_CPU` | If set to [ True, true, or TRUE ], disables the collectd cpu plugin | `-e "DISABLE_CPU=True"` |
