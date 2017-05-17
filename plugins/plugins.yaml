@@ -1,0 +1,46 @@
+---
+- name: elasticsearch
+  version: latest
+  repo: signalfx/collectd-elasticsearch
+
+- name: mongodb
+  version: latest
+  repo: signalfx/collectd-mongodb
+  pip_packages:
+    - pymongo==3.1.1
+
+- name: zookeeper
+  version: latest
+  repo: signalfx/collectd-zookeeper
+
+- name: haproxy
+  version: latest
+  repo: signalfx/collectd-haproxy
+
+- name: couchbase
+  version: latest
+  repo: signalfx/collectd-couchbase
+
+- name: redis
+  version: latest
+  repo: signalfx/redis-collectd-plugin
+
+- name: rabbitmq
+  version: latest
+  repo: signalfx/collectd-rabbitmq
+
+- name: marathon
+  version: latest
+  repo: signalfx/collectd-marathon
+
+- name: vmstat
+  version: latest
+  repo: signalfx/vmstat-collectd
+
+#- name: timestats
+  #version: latest
+  #repo: signalfx/collectd-timestats
+
+#- name: cassandra
+  #version: latest
+  #repo: signalfx/collectd-cassandra
