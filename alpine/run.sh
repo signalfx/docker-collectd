@@ -75,7 +75,7 @@ elif [ -e /mnt/hostname ]; then
 #Exit with error code 1
 else
     echo 1>&2 "ERROR: Unable to find the hostname for the Docker host. Please \
-specify a hostname with the option -e \"HOSTNAME=<hostname>\" or by \
+specify a hostname with the option -e \"COLLECTD_HOSTNAME=<hostname>\" or by \
 mounting the Docker host's hostname \
 -v <path to host's hostname file>:/mnt/hostname:ro"
     exit 1
