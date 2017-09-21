@@ -191,7 +191,7 @@ but you also can set the following:
 | `PER_CORE_CPU_UTIL` | If set to [True, true, or TRUE], configures the SignalFx collectd plugin to report CPU utilization per core | `-e "PER_CORE_CPU_UTIL=True` |
 | `DOCKER_TIMEOUT` | The number of seconds calls to the Docker API should wait to timeout | `-e "DOCKER_TIMEOUT=3"` |
 | `DOCKER_INTERVAL` | If set we will use the specified interval for the docker plugin, otherwise the global collectd interval (defaulted to 10 secs) will be used | `-e "DOCKER_INTERVAL=10"` |
-| `SF_INGEST_HOST` | Will set the ingest url on the signalfx metadata plugin and on collectd itself | `-e "SF_INGEST_URL=http://ingest.proxy.com" ` |
+| `SF_INGEST_HOST` | Will set the ingest url on the signalfx metadata plugin and on collectd itself | `-e "SF_INGEST_HOST=http://ingest.proxy.com" ` |
 
 ### Extending
 [Click this link to read about Extending SignalFx Docker collectd image](./docs/EXTENDING.md)
