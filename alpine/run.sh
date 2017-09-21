@@ -100,7 +100,7 @@ if [ -z "$COLLECTD_FLUSHINTERVAL" ]; then
 fi
 if [ ! -S /var/run/docker.sock ]; then
     echo "The Docker socket was not mounted into this container, the SignalFx Docker collectd plugin will be disabled"
-    rm /etc/collectd/managed_config/dockerplugin.conf
+    rm /etc/collectd/managed_config/10-docker.conf
 fi
 if is_true $DISABLE_DISK ; then
     DISK=$''
