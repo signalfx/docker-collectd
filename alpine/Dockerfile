@@ -68,16 +68,13 @@ RUN apk update \
     && cp /tmp/integrations-master/collectd-docker/10-docker.conf /etc/collectd/managed_config/ \
     # Set correct permissions on startup script
     && cd /run \
-    && rm -rf /tmp/* \
+    && rm -rf /tmp/*
 
 # Add in startup script
 COPY ["run.sh", "/run/"]
 
 # Make run script executable
-RUN chmod +x run.sh
+RUN chmod +x /run/run.sh
 
 # Set the shell as the entry point
-ENTRYPOINT sh
-
-# Execute the script run.sh in the shell
-CMD /run/run.sh
+ENTRYPOINT /run/run.sh
