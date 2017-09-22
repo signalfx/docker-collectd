@@ -9,9 +9,6 @@ ENV DEBIAN_FRONTEND noninteractive
 # Setup our collectd
 ADD ["configs", "/tmp/"]
 
-# Add in startup script
-ADD ["run.sh", "/.docker/"]
-
 # Install all apt-get utils and required repos
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -50,8 +47,6 @@ RUN apt-get update \
     && unzip /tmp/integrations.zip -d /tmp \
     # Move the managed config into place
     && cp /tmp/integrations-master/collectd-docker/10-docker.conf /etc/collectd/managed_config/ \
-    # Set correct permissions on startup script
-    && chmod +x /.docker/run.sh \
     # Uninstall helper packages
     && apt-get --purge -y remove \
         software-properties-common \
@@ -68,7 +63,13 @@ RUN apt-get update \
     && rm -rf /var/cache/man/* \
     # Clean up tmp directory
     && rm -rf /tmp/*
-    
+
+# Add in startup script
+ADD ["run.sh", "/.docker/"]
+
+# Set correct permissions on startup script
+RUN chmod +x /.docker/run.sh
+
 # Change directory and declare startup command
 WORKDIR /.docker/
 CMD /.docker/run.sh
