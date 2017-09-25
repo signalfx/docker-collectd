@@ -14,9 +14,6 @@ ARG PLUGIN_ADDR=https://dl.signalfx.com/apks/signalfx-collectd-plugin/alpine/${A
 # Setup our collectd
 COPY ["configs", "/tmp/"]
 
-# Add in startup script
-COPY ["run.sh", "/run/"]
-
 # Add public repository key
 COPY ["support+apk@signalfx.com-57fbc71c.rsa.pub", "/etc/apk/keys"]
 
@@ -71,11 +68,13 @@ RUN apk update \
     && cp /tmp/integrations-master/collectd-docker/10-docker.conf /etc/collectd/managed_config/ \
     # Set correct permissions on startup script
     && cd /run \
-    && chmod +x run.sh \
-    && rm -rf /tmp/* \
+    && rm -rf /tmp/*
+
+# Add in startup script
+COPY ["run.sh", "/run/"]
+
+# Make run script executable
+RUN chmod +x /run/run.sh
 
 # Set the shell as the entry point
-ENTRYPOINT sh
-
-# Execute the script run.sh in the shell
-CMD /run/run.sh
+ENTRYPOINT /run/run.sh

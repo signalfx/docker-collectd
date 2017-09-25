@@ -50,6 +50,7 @@ if is_true $DISABLE_HOST_MONITORING ; then
     DISABLE_VMEM=True
     DISABLE_UPTIME=True
     DISABLE_SFX_PLUGIN=True
+    DISABLE_AGENT_PROCESS_STATS=True
 fi
 
 if [ -z "$SF_API_TOKEN" ]; then
@@ -68,6 +69,11 @@ if [ -n "$COLLECTD_HOSTNAME" ]; then
 #If the host's hostname is mounted @ /mnt/etc/hostname, then assign to HOSTNAME
 elif [ -e /mnt/hostname ]; then
     HOST_HOSTNAME=$(cat /mnt/hostname)
+    if [ -n "$HOST_HOSTNAME" ]; then
+        HOSTNAME="Hostname \"$HOST_HOSTNAME\""
+    fi
+elif [ -e /hostfs/etc/hostname ]; then
+    HOST_HOSTNAME=$(cat /hostfs/etc/hostname)
     if [ -n "$HOST_HOSTNAME" ]; then
         HOSTNAME="Hostname \"$HOST_HOSTNAME\""
     fi
@@ -100,7 +106,7 @@ if [ -z "$COLLECTD_FLUSHINTERVAL" ]; then
 fi
 if [ ! -S /var/run/docker.sock ]; then
     echo "The Docker socket was not mounted into this container, the SignalFx Docker collectd plugin will be disabled"
-    rm /etc/collectd/managed_config/dockerplugin.conf
+    rm /etc/collectd/managed_config/10-docker.conf
 fi
 if is_true $DISABLE_DISK ; then
     DISK=$''
@@ -194,6 +200,16 @@ else
     UPTIME=$'LoadPlugin uptime'
 fi
 
+if is_true $DISABLE_AGENT_PROCESS_STATS ; then
+    AGENT_PROCESS_STATS=$''
+else
+    AGENT_PROCESS_STATS=$'LoadPlugin processes \
+\
+<Plugin processes> \
+    Process collectd \
+</Plugin>'
+fi
+
 AWS_UNIQUE_ID=$(curl -s --connect-timeout 1 http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId + "_" + .accountId + "_" + .region')
 
 [ -n "$AWS_UNIQUE_ID" ] && AWS_VALUE="?sfxdim_AWSUniqueId=$AWS_UNIQUE_ID"
@@ -212,6 +228,7 @@ sed -i -e "s#%%%PROTOCOLS%%%#$PROTOCOLS#g" $COLLECTD_CONF
 sed -i -e "s#%%%VMEM%%%#$VMEM#g" $COLLECTD_CONF
 sed -i -e "s#%%%UPTIME%%%#$UPTIME#g" $COLLECTD_CONF
 sed -i -e "s#%%%INTERNAL_STATS%%%#$INTERNAL_STATS#g" $COLLECTD_CONF
+sed -i -e "s#%%%AGENT_PROCESS_STATS%%%#$AGENT_PROCESS_STATS#g" $COLLECTD_CONF
 
 
 # Process option to disable aggregation plugin
@@ -247,7 +264,21 @@ if is_true $DISABLE_SFX_PLUGIN ; then
     if [ -f "$PLUGIN_CONF" ]; then
         rm $PLUGIN_CONF
     fi
-else   
+else
+    # set etc path if the old etc mount point doesn't exist
+    if [[ -d "/hostfs/etc" && ! -d "/mnt/etc" ]]; then
+        sed -i -e "s#%%%ETC_PATH%%%#EtcPath \"/hostfs/etc\"#g" $PLUGIN_CONF
+    else 
+        sed -i -e "s#%%%ETC_PATH%%%##g" $PLUGIN_CONF
+    fi
+
+    # set proc path if the old proc mount point doesn't exist
+    if [[ -d "/hostfs/proc" && ! -d "/mnt/proc" ]]; then
+        sed -i -e "s#%%%PROC_PATH%%%#ProcPath \"/hostfs/proc\"#g" $PLUGIN_CONF
+    else 
+        sed -i -e "s#%%%PROC_PATH%%%##g" $PLUGIN_CONF
+    fi
+
     if is_true $PER_CORE_CPU_UTIL && ! is_true $DISABLE_AGGREGATION ; then
         PER_CORE_UTIL_CONFIG="true" 
     else
@@ -294,10 +325,12 @@ fi
 
 cat $COLLECTD_CONF
 
+# Legacy support incase someone hasn't noticed our run instructions changed
 if [ -d "/mnt/etc" ]; then
 	cp -f /mnt/etc/*-release /etc
 fi
 
+# Legacy support in case someone hasn't noticed our run instructions changed
 if [ ! -d /mnt/oldproc ]; then
 	if [ -d /mnt/proc ]; then
 		umount /proc

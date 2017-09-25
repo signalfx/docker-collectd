@@ -28,11 +28,8 @@ Run collectd with the default configuration with the following command:
 docker run --privileged \
   --net="host" \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /etc/hostname:/mnt/hostname:ro \
-  -v /proc:/mnt/proc:ro \
   -v /:/hostfs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd
 ```
 
@@ -44,10 +41,7 @@ the Docker socket `-v /var/run/docker.sock:/var/run/docker.sock`.
 docker run --privileged \
   --net="host" \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /etc/hostname:/mnt/hostname:ro \
-  -v /proc:/mnt/proc:ro \
   -v /:/hostfs:ro \
-  -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd
 ```
 
@@ -59,11 +53,8 @@ and start collectd.
 docker run -ti --privileged \
   --net="host" \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /etc/hostname:/mnt/hostname:ro \
-  -v /proc:/mnt/proc:ro \
   -v /:/hostfs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd bash
 ```
 
@@ -74,11 +65,8 @@ can put `SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX` into a file (that you can
 ```
 docker run --privileged --env-file=token.env \
   --net="host" \
-  -v /etc/hostname:/mnt/hostname:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /proc:/mnt/proc:ro \
   -v /:/hostfs:ro \
-  -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd
 ```
 
@@ -90,11 +78,8 @@ pairs defined `KEY=VALUE`.
 docker run --privileged --env-file=token.env \
   --net="host" \
   -e DIMENSIONS="hello=world foo=bar"
-  -v /etc/hostname:/mnt/hostname:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /proc:/mnt/proc:ro \
   -v /:/hostfs:ro \
-  -v /etc:/mnt/etc:ro \
   quay.io/signalfuse/collectd
 ```
 
@@ -105,11 +90,8 @@ On CoreOS because /etc/*-release are symlinks you want to mount
 docker run --privileged \
   --net="host" \
   -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
-  -v /etc/hostname:/mnt/hostname:ro \
-  -v /proc:/mnt/proc:ro \
   -v /:/hostfs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /usr/share/coreos:/mnt/etc:ro \
   quay.io/signalfuse/collectd
 ```
 
@@ -126,41 +108,21 @@ would not be accurate.
 
 Yes.  Setting the `--net` option to `"host"` allows the container to see the host's networking stack and provide accurate information.
 
-### Do I need to pass in /etc?
-
-It's actually optional but we use this to get the host OS's version so the
-SignalFx Collectd Plugin will function correctly and report the right
-information.  If you leave it out you will see the container's OS in the
-meta-data for this host.
 
 ### Do I need to mount the host's / to /hostfs?
 
-This is a requirement for the df plugin to correctly report information about
-the host and not from the container.  If you explicitly disable the df plugin
-then this is no longer a requirement to run the container.
+This is a requirement for the collectd to accurately report information about the underlying host.
 
 ### Do I need to provide a host name?
 
-You have an option to either bind mount your host's `/etc/hostname` to the 
-container's `/mnt/hostname` or to set the environment variable 
-`COLLECTD_HOSTNAME`. You may set the environment variable using the runtime 
+You may optionally set the environment variable using the runtime 
 option `-e "COLLECTD_HOSTNAME=<hostname>"` where `<hostname>` is a 
 valid host name string. You may also set the environment variable in an optional
- environment file.  Please note that if `/etc/hostname` is mounted and 
- `COLLECTD_HOSTNAME` is set, that the mounted host name will be used.
-A hostname must be specified regardless of the method.
-
-### Why can't I exec into the running docker container?
-
-Because the docker container's proc filesystem has been replaced by the host
-and because the PIDs are remapped, they no longer line up. See the example
-above on how to run the image with a different command so you can then execute
-`/.docker/run.sh` yourself to be on it while it runs.
+ environment file.  If a host name is not specified `/hostfs/etc/hostname` name will be used.
 
 ### Can I configure anything?
 
-Yes! You are required to set the `SF_API_TOKEN` and provide a hostname either 
-by mounting `/etc/hostname` to `/mnt/hostname` or setting `COLLECTD_HOSTNAME`,
+Yes! You are required to set the `SF_API_TOKEN`,
 but you also can set the following:
 
 | Environment Variable | Description | Example |
@@ -188,10 +150,11 @@ but you also can set the following:
 | `DISABLE_UPTIME` | If set to [ True, true, or TRUE ], disables the collectd uptime plugin | `-e "DISABLE_UPTIME=True"` |
 | `DISABLE_SFX_PLUGIN` | If set to [ True, true, or TRUE ], disables the SignalFx collectd plugin | `-e "DISABLE_SFX_PLUGIN=True"` |
 | `DISABLE_WRITE_HTTP` | If set to [ True, true, or TRUE ], disables the collectd write http plugin | `-e "DISABLE_WRITE_HTTP=True"` |
+| `DISABLE_AGENT_PROCESS_STATS` | If set to [True, true, or TRUE ], disables metrics about the collectd process | `-e "DISABLE_AGENT_PROCESS_STATS=True"` |
 | `PER_CORE_CPU_UTIL` | If set to [True, true, or TRUE], configures the SignalFx collectd plugin to report CPU utilization per core | `-e "PER_CORE_CPU_UTIL=True` |
 | `DOCKER_TIMEOUT` | The number of seconds calls to the Docker API should wait to timeout | `-e "DOCKER_TIMEOUT=3"` |
 | `DOCKER_INTERVAL` | If set we will use the specified interval for the docker plugin, otherwise the global collectd interval (defaulted to 10 secs) will be used | `-e "DOCKER_INTERVAL=10"` |
-| `SF_INGEST_HOST` | Will set the ingest url on the signalfx metadata plugin and on collectd itself | `-e "SF_INGEST_URL=http://ingest.proxy.com" ` |
+| `SF_INGEST_HOST` | Will set the ingest url on the signalfx metadata plugin and on collectd itself | `-e "SF_INGEST_HOST=http://ingest.proxy.com" ` |
 
 ### Extending
 [Click this link to read about Extending SignalFx Docker collectd image](./docs/EXTENDING.md)
