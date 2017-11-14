@@ -26,6 +26,7 @@ RUN apt-get update \
         collectd \
         # Install helper packages
         curl \
+        jq \
         unzip \
         # Install pip
         python-pip \
