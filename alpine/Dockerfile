@@ -22,6 +22,7 @@ RUN apk update \
     && apk upgrade \
     && apk add py-pip \
                unzip \
+               jq \
                curl \
     # Make directory for local signalfx-collectd repository
     && mkdir -p /repo \
