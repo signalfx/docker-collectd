@@ -310,7 +310,7 @@ else
         if [ -z "$AWS_VALUE" ] ; then
             ADD_DIMENSIONS="?$ADD_DIMENSIONS"
         else
-            ADD_DIMENSIONS="&$ADD_DIMENSIONS"
+            ADD_DIMENSIONS="\&$ADD_DIMENSIONS"
         fi
     fi
     sed -i -e "s#%%%DIMENSIONS%%%#$ADD_DIMENSIONS#g" $WRITE_HTTP_CONF
