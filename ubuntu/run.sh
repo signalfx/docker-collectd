@@ -53,6 +53,12 @@ if is_true $DISABLE_HOST_MONITORING ; then
     DISABLE_AGENT_PROCESS_STATS=True
 fi
 
+if [ -n "$DOG_STATSD_PORT" ]; then
+    DOG_STATSD_PORT="DogStatsDPort $DOG_STATSD_PORT"
+else
+    DOG_STATSD_PORT=""
+fi
+
 if [ -z "$SF_API_TOKEN" ]; then
 	echo "Please set SF_API_TOKEN env to the API token to use"
 	exit 1
@@ -66,8 +72,11 @@ fi
 
 AWS_UNIQUE_ID=$(curl -s --connect-timeout 1 http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId + "_" + .accountId + "_" + .region')
 
+# if FQDN_LOOKUP is set, use that instead of the other host options
+if is_true $FQDN_LOOKUP ; then
+    HOSTNAME="FQDNLookup true"
 #If the user sets COLLECTD_HOSTNAME then assign to HOSTNAME
-if [ -n "$COLLECTD_HOSTNAME" ]; then
+elif [ -n "$COLLECTD_HOSTNAME" ]; then
 	HOSTNAME="Hostname \"$COLLECTD_HOSTNAME\""
 elif [ -n "$USE_AWS_UNIQUE_ID_AS_HOSTNAME" ]; then
     # When ran inside an ECS cluster, the system hostname can be the same for
@@ -295,6 +304,7 @@ else
     sed -i -e "s#%%%API_TOKEN%%%#$SF_API_TOKEN#g" $PLUGIN_CONF
     sed -i -e "s#%%%INTERVAL%%%#$COLLECTD_INTERVAL#g" $PLUGIN_CONF
     sed -i -e "s#%%%AWS_PATH%%%#$AWS_VALUE#g" $PLUGIN_CONF
+    sed -i -e "s#%%%DOG_STATSD_PORT%%%#$DOG_STATSD_PORT#g" $PLUGIN_CONF
     cat $PLUGIN_CONF
 fi
 
