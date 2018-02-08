@@ -63,15 +63,24 @@ fi
 if [ -n "$COLLECTD_CONFIGS" ]; then
 	echo "Include \"$COLLECTD_CONFIGS/*.conf\"" >> $COLLECTD_CONF
 fi
+
+AWS_UNIQUE_ID=$(curl -s --connect-timeout 1 http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId + "_" + .accountId + "_" + .region')
+
 #If the user sets COLLECTD_HOSTNAME then assign to HOSTNAME
 if [ -n "$COLLECTD_HOSTNAME" ]; then
 	HOSTNAME="Hostname \"$COLLECTD_HOSTNAME\""
-#If the host's hostname is mounted @ /mnt/etc/hostname, then assign to HOSTNAME
+elif [ -n "$USE_AWS_UNIQUE_ID_AS_HOSTNAME" ]; then
+    # When ran inside an ECS cluster, the system hostname can be the same for
+    # every docker container instance, which makes the hostname fairly useless
+    # as a dimension.
+    HOSTNAME="Hostname \"${AWS_UNIQUE_ID}\""
+#If the host's hostname is mounted @ /mnt/hostname, then assign to HOSTNAME
 elif [ -e /mnt/hostname ]; then
     HOST_HOSTNAME=$(cat /mnt/hostname)
     if [ -n "$HOST_HOSTNAME" ]; then
         HOSTNAME="Hostname \"$HOST_HOSTNAME\""
     fi
+#If the host's hostname is mounted @ /hostfs/etc/hostname, then assign to HOSTNAME
 elif [ -e /hostfs/etc/hostname ]; then
     HOST_HOSTNAME=$(cat /hostfs/etc/hostname)
     if [ -n "$HOST_HOSTNAME" ]; then
@@ -210,7 +219,6 @@ else
 </Plugin>'
 fi
 
-AWS_UNIQUE_ID=$(curl -s --connect-timeout 1 http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId + "_" + .accountId + "_" + .region')
 
 [ -n "$AWS_UNIQUE_ID" ] && AWS_VALUE="?sfxdim_AWSUniqueId=$AWS_UNIQUE_ID"
 
