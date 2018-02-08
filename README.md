@@ -95,6 +95,19 @@ docker run --privileged \
   quay.io/signalfuse/collectd
 ```
 
+If you're using the dogstatsd listener in the SignalFx plugin.  You will need to expose the container port and
+specify the port with an environment variable.
+```
+docker run --privileged \
+  --net="host" \
+  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -e DOG_STATSD_PORT=8126 \
+  -p 8126:8126 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /:/hostfs:ro \
+  quay.io/signalfuse/collectd
+```
+
 ## FAQ
 
 ### Do I need to run the container as privileged?
@@ -115,10 +128,14 @@ This is a requirement for the collectd to accurately report information about th
 
 ### Do I need to provide a host name?
 
-You may optionally set the environment variable using the runtime 
-option `-e "COLLECTD_HOSTNAME=<hostname>"` where `<hostname>` is a 
+You may set `FQDN_LOOKUP` to `true` to enable collectd to perform an FQDN look up, but this may not work in all circumstances.
+If a lookup fails the container will exit and log a message indicating that fqdn lookup failed.
+You may optionally set the environment variable using the runtime
+option `-e "COLLECTD_HOSTNAME=<hostname>"` where `<hostname>` is a
 valid host name string. You may also set the environment variable in an optional
- environment file.  If a host name is not specified `/hostfs/etc/hostname` name will be used.
+environment file.  If a host name is not specified `/hostfs/etc/hostname` name will be used.
+The container will exit with an error if `FQDN_LOOKUP` is not true, `COLLECTD_HOSTNAME` is not set, and hostname can't
+be found under `/hostfs/etc/hostname`.
 
 ### Can I configure anything?
 
@@ -127,14 +144,15 @@ but you also can set the following:
 
 | Environment Variable | Description | Example |
 | -------------------- | ----------- | ------- |
-| `COLLECTD_BUFFERSIZE` | if set we will set `write_http`'s buffersize to the value provided, otherwise a default value of 16384 will be used. | `-e "COLLECTD_BUFFERSIZE=<size>"` |
-| `COLLECTD_CONFIGS` | if set we will include `$COLLECTD_CONFIGS/*.conf` in collectd.conf where you can include any other plugins you want to enable. These of course would need to be mounted in the container with -v. | `-e "COLLECTD_CONFIGS=<path to confs>"` |
+| `COLLECTD_BUFFERSIZE` | If set we will set `write_http`'s buffersize to the value provided, otherwise a default value of 16384 will be used. | `-e "COLLECTD_BUFFERSIZE=<size>"` |
+| `COLLECTD_CONFIGS` | If set we will include `$COLLECTD_CONFIGS/*.conf` in collectd.conf where you can include any other plugins you want to enable. These of course would need to be mounted in the container with -v. | `-e "COLLECTD_CONFIGS=<path to confs>"` |
 | `COLLECTD_FLUSHINTERVAL` | if set we will set `write_http`'s flush interval to the value provided, otherwise a default value of what COLLECTD_INTERVAL is set to will be used. | `-e "COLLECTD_FLUSHINTERVAL=<interval>"` |
-| `COLLECTD_HOSTNAME` | if set we will set this in `/etc/collectd/collectd.conf`.  If the environment variable is not set, we will attempt to cat `/mnt/hostname` for the host's hostname.  If no hostname is discovered, we will exit with an error code of 1 and display a message indicating that a hostname could not be found. | `-e "COLLECTD_HOSTNAME=<hostname>"` |
+| `FQDN_LOOKUP=true` | If set to [ True, true, or TRUE ], then collectd will be configured to use FQDNLook up to identify the value for host.
+| `COLLECTD_HOSTNAME` | If set and `FQDN_LOOKUP` is unset or false, then we will set the collectd hostname to the supplied value in `/etc/collectd/collectd.conf`.  If the environment variable is not set, we will attempt to cat `/mnt/hostname` for the host's hostname.  If no hostname is discovered, we will exit with an error code of 1 and display a message indicating that a hostname could not be found. | `-e "COLLECTD_HOSTNAME=<hostname>"` |
 | `USE_AWS_UNIQUE_ID_AS_HOSTNAME` | If non-empty, the hostname will be set to the AWS Unique ID, which is determined using the EC2 metadata endpoint.  This is useful in ECS clusters where the container's hostname might be localhost.  Note that you will also have a dimension called AWSUniqueId with the same value as the `host` dimension.  This is necessary duplication because we do property syncing to the `AWSUniqueId` dimension and not to `host`. | `-e USE_AWS_UNIQUE_ID_AS_HOSTNAME=true` |
-| `COLLECTD_INTERVAL` | if set we will use the specified interval for collectd and the plugin, otherwise the default interval is 10 seconds. | `-e "COLLECTD_INTERVAL=<interval>"` |
-| `WRITE_HTTP_TIMEOUT` | if set we will set `write_http`'s timeout to the value provided, otherwise the default value of WRITE_HTTP_TIMEOUT will be `9000`. | `-e WRITE_HTTP_TIMEOUT=9000` |
-| `LOG_HTTP_ERROR` | if set we will set `write_http`'s LogHttpError settting to the value provided, otherwise the default value of LOG_HTTP_ERROR will be `false`. | `-e LOG_HTTP_ERROR=false` |
+| `COLLECTD_INTERVAL` | If set we will use the specified interval for collectd and the plugin, otherwise the default interval is 10 seconds. | `-e "COLLECTD_INTERVAL=<interval>"` |
+| `WRITE_HTTP_TIMEOUT` | If set we will set `write_http`'s timeout to the value provided, otherwise the default value of WRITE_HTTP_TIMEOUT will be `9000`. | `-e WRITE_HTTP_TIMEOUT=9000` |
+| `LOG_HTTP_ERROR` | If set we will set `write_http`'s LogHttpError settting to the value provided, otherwise the default value of LOG_HTTP_ERROR will be `false`. | `-e LOG_HTTP_ERROR=false` |
 | `DIMENSIONS` | If set with a string of space separated `key=value` dimension pairs, then each metric dipatched will be tagged with those dimensions. | `-e DIMENSIONS="foo=bar hello=world"` |
 | `DISABLE_AGGREGATION` | If set to [ True, true, or TRUE ], disables the collectd aggregation plugin | `-e "DISABLE_AGGREGATION=True"` |
 | `DISABLE_CPU` | If set to [ True, true, or TRUE ], disables the collectd cpu plugin | `-e "DISABLE_CPU=True"` |
@@ -153,6 +171,7 @@ but you also can set the following:
 | `DISABLE_WRITE_HTTP` | If set to [ True, true, or TRUE ], disables the collectd write http plugin | `-e "DISABLE_WRITE_HTTP=True"` |
 | `DISABLE_AGENT_PROCESS_STATS` | If set to [True, true, or TRUE ], disables metrics about the collectd process | `-e "DISABLE_AGENT_PROCESS_STATS=True"` |
 | `PER_CORE_CPU_UTIL` | If set to [True, true, or TRUE], configures the SignalFx collectd plugin to report CPU utilization per core | `-e "PER_CORE_CPU_UTIL=True` |
+| `DOG_STATSD_PORT` | If specified, configures the SignalFx collectd plugin to read DogStatsdD metrics over the configured port.  You must also expose this port on the container. | `-e "STATSD_PORT=8126` |
 | `DOCKER_TIMEOUT` | The number of seconds calls to the Docker API should wait to timeout | `-e "DOCKER_TIMEOUT=3"` |
 | `DOCKER_INTERVAL` | If set we will use the specified interval for the docker plugin, otherwise the global collectd interval (defaulted to 10 secs) will be used | `-e "DOCKER_INTERVAL=10"` |
 | `SF_INGEST_HOST` | Will set the ingest url on the signalfx metadata plugin and on collectd itself | `-e "SF_INGEST_HOST=http://ingest.proxy.com" ` |
