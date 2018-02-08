@@ -134,7 +134,8 @@ You may optionally set the environment variable using the runtime
 option `-e "COLLECTD_HOSTNAME=<hostname>"` where `<hostname>` is a
 valid host name string. You may also set the environment variable in an optional
 environment file.  If a host name is not specified `/hostfs/etc/hostname` name will be used.
-If none of the previously mentioned methods work, the container will exist with an error.
+The container will exit with an error if `FQDN_LOOKUP` is not true, `COLLECTD_HOSTNAME` is not set, and hostname can't
+be found under `/hostfs/etc/hostname`.
 
 ### Can I configure anything?
 
