@@ -51,7 +51,6 @@ RUN apt-get update \
     # Uninstall helper packages
     && apt-get --purge -y remove \
         software-properties-common \
-        curl \
         unzip \
     # Clean up packages
     && apt-get autoclean \
