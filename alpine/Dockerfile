@@ -1,11 +1,11 @@
-FROM alpine:3.4
+FROM alpine:3.7
 
 MAINTAINER SignalFx Support <support+collectd@signalfx.com>
 
 # Specify Versions
 ARG COLLECTD_STAGE=release
 ARG PLUGIN_STAGE=release
-ARG ALPINE_VERSION=3.4
+ARG ALPINE_VERSION=3.7
 
 # Set repository urls
 ARG COLLECTD_ADDR=https://dl.signalfx.com/apks/collectd/alpine/${ALPINE_VERSION}/${COLLECTD_STAGE}/collectd.tar.gz
