@@ -359,5 +359,5 @@ fi
 if [ -z "$@" ]; then
   exec collectd -C $COLLECTD_CONF -f
 else
-  exec "$@"
+  exec $@
 fi
