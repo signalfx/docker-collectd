@@ -27,7 +27,8 @@ Run collectd with the default configuration with the following command:
 ```
 docker run --privileged \
   --net="host" \
-  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -e "SF_API_TOKEN=ORG_ACCESS_TOKEN" \
+  -e "SF_INGEST_HOST=ingest.YOUR_SIGNALFX_REALM.signalfx.com"
   -v /:/hostfs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   quay.io/signalfuse/collectd
@@ -40,7 +41,8 @@ the Docker socket `-v /var/run/docker.sock:/var/run/docker.sock`.
 ```
 docker run --privileged \
   --net="host" \
-  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -e "SF_API_TOKEN=ORG_ACCESS_TOKEN" \
+  -e "SF_INGEST_HOST=ingest.YOUR_SIGNALFX_REALM.signalfx.com" \
   -v /:/hostfs:ro \
   quay.io/signalfuse/collectd
 ```
@@ -52,19 +54,21 @@ and start collectd.
 ```
 docker run -ti --privileged \
   --net="host" \
-  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -e "SF_API_TOKEN=ORG_ACCESS_TOKEN" \
+  -e "SF_INGEST_HOST=ingest.YOUR_SIGNALFX_REALM.signalfx.com" \
   -v /:/hostfs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   quay.io/signalfuse/collectd bash
 ```
 
 If you don't want to pass your API token through a command-line argument, you
-can put `SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX` into a file (that you can
+can put `SF_API_TOKEN=ORG_ACCESS_TOKEN` into a file (that you can
 `chmod 600`) and use the `--env-file` command-line argument:
 
 ```
 docker run --privileged --env-file=token.env \
   --net="host" \
+  -e "SF_INGEST_HOST=ingest.YOUR_SIGNALFX_REALM.signalfx.com" \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /:/hostfs:ro \
   quay.io/signalfuse/collectd
@@ -77,7 +81,9 @@ pairs defined `KEY=VALUE`.
 ```
 docker run --privileged --env-file=token.env \
   --net="host" \
-  -e DIMENSIONS="hello=world foo=bar"
+  -e DIMENSIONS="hello=world foo=bar" \
+  -e "SF_API_TOKEN=ORG_ACCESS_TOKEN" \
+  -e "SF_INGEST_HOST=ingest.YOUR_SIGNALFX_REALM.signalfx.com" \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /:/hostfs:ro \
   quay.io/signalfuse/collectd
@@ -89,7 +95,8 @@ On CoreOS because /etc/*-release are symlinks you want to mount
 ```
 docker run --privileged \
   --net="host" \
-  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -e "SF_API_TOKEN=ORG_ACCESS_TOKEN" \
+  -e "SF_INGEST_HOST=ingest.YOUR_SIGNALFX_REALM.signalfx.com" \
   -v /:/hostfs:ro \
   -v /var/run/docker.sock:/var/run/docker.sock \
   quay.io/signalfuse/collectd
@@ -100,7 +107,8 @@ specify the port with an environment variable.
 ```
 docker run --privileged \
   --net="host" \
-  -e "SF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXX" \
+  -e "SF_API_TOKEN=ORG_ACCESS_TOKEN" \
+  -e "SF_INGEST_HOST=ingest.YOUR_SIGNALFX_REALM.signalfx.com" \
   -e DOG_STATSD_PORT=8126 \
   -p 8126:8126 \
   -v /var/run/docker.sock:/var/run/docker.sock \
